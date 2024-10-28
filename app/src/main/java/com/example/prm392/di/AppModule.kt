@@ -1,10 +1,14 @@
 package com.example.prm392.di
 
 import android.content.Context
+import com.example.prm392.data.IClothingProductApi
 import com.example.prm392.data.IProductApi
 import com.example.prm392.data.IUserApi
+import com.example.prm392.data.repository.ClothingProductRepository
 import com.example.prm392.data.repository.ProductRepository
 import com.example.prm392.data.repository.UserRepository
+import com.example.prm392.domain.service.ClothingProduct.ClothingProductService
+import com.example.prm392.domain.service.ClothingProduct.GetAllClothing
 import com.example.prm392.domain.service.GetProductDataService
 import com.example.prm392.domain.service.GetSearchProductDataService
 import com.example.prm392.domain.service.Services
@@ -126,6 +130,26 @@ object AppModule {
             loginService = LoginService(repository),
             registerService = RegisterService(repository),
             getAuthUserService = GetAuthUserService(repository)
+        )
+    }
+
+    @Provides
+    @Singleton
+    fun provideClothingProductApi(retrofit: Retrofit) : IClothingProductApi {
+        return retrofit.create(IClothingProductApi::class.java)
+    }
+
+    @Provides
+    @Singleton
+    fun provideClothingProductRepository(api: IClothingProductApi, headerProcessing: HeaderProcessing): ClothingProductRepository {
+        return ClothingProductRepository(api, headerProcessing)
+    }
+
+    @Provides
+    @Singleton
+    fun provideClothingProductServices(repository: ClothingProductRepository): ClothingProductService {
+        return ClothingProductService(
+           getAllClothing = GetAllClothing(repository)
         )
     }
 }

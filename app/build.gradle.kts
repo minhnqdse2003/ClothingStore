@@ -89,5 +89,9 @@ dependencies {
 
     implementation("com.squareup.okhttp3:logging-interceptor:4.12.0")
     implementation("androidx.hilt:hilt-navigation-compose:1.2.0")
+
+    //storage
     implementation("androidx.datastore:datastore-preferences:1.0.0")
+    //swipe to refresh
+    implementation("com.google.accompanist:accompanist-swiperefresh:0.36.0")
 }

@@ -11,6 +11,7 @@ import androidx.navigation.navArgument
 import com.example.prm392.presentation.SearchScreen
 import com.example.prm392.presentation.components.animations.Animations
 import com.example.prm392.presentation.detail_screen.DetailScreen
+import com.example.prm392.presentation.home_screen.HomeScreen
 import com.example.prm392.presentation.login_screen.LoginScreen
 import com.example.prm392.utils.TokenSlice
 
@@ -75,6 +76,10 @@ fun AppNavigation(
             navBackStackEntry.arguments?.getString("title").let { title ->
                 DetailScreen(title!!)
             }
+        }
+
+        composable(route = Screen.HomeScreen.route) {
+            HomeScreen()
         }
     }
 }
