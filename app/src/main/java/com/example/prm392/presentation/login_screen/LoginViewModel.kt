@@ -2,24 +2,18 @@ package com.example.prm392.presentation.login_screen
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import androidx.lifecycle.viewmodel.compose.viewModel
-import com.example.prm392.data.dto.Users.GetUserAuth.UserResponseModel
 import com.example.prm392.data.dto.Users.GetUserAuth.toGetAuthResponse
 import com.example.prm392.data.dto.Users.toLoginResponseDto
 import com.example.prm392.domain.model.User.Request.LoginRequestModel
 import com.example.prm392.domain.model.User.Response.GetUserAuthResponseDto
-import com.example.prm392.domain.model.User.Response.LoginResponseDto
 import com.example.prm392.domain.model.User.Response.RegisterResponseDto
 import com.example.prm392.domain.service.User.UserService
-import com.example.prm392.presentation.navigation.Navigator
-import com.example.prm392.presentation.navigation.Screen
 import com.example.prm392.utils.Result
 import com.example.prm392.utils.TokenSlice
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.catch
-import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -28,7 +22,6 @@ import javax.inject.Inject
 class LoginViewModel @Inject constructor(
     private val userService: UserService,
     private val tokenSlice: TokenSlice,
-    private val navigator: Navigator
 ):ViewModel() {
     private val _loginServiceResponse = MutableStateFlow<Result<String>>(Result.Idle)
     val loginService = _loginServiceResponse.asStateFlow()
@@ -50,7 +43,6 @@ class LoginViewModel @Inject constructor(
             .collect{
                 val result = it.toLoginResponseDto()
                 tokenSlice.saveToken(result.accessToken)
-                navigator.navigate(Screen.SearchScreen)
                 _loginServiceResponse.value = Result.Success<String>("")
             }
     }
@@ -71,6 +63,5 @@ class LoginViewModel @Inject constructor(
 
     fun onClickButtonLogout() = viewModelScope.launch {
         tokenSlice.clearToken()
-        navigator.navigate(Screen.LoginScreen)
     }
 }

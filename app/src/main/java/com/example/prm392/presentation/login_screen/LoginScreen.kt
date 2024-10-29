@@ -14,13 +14,14 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavHostController
 import coil3.compose.rememberAsyncImagePainter
 import com.example.prm392.R
 import com.example.prm392.presentation.login_screen.components.LoginRegisterToggle
 import com.example.prm392.utils.MySpacer
 
 @Composable
-fun LoginScreen() {
+fun LoginScreen(navController: NavHostController) {
     // State to track whether the user is on the login or register screen
     var isLogin by remember { mutableStateOf(true) }
 
@@ -64,9 +65,8 @@ fun LoginScreen() {
                     modifier = Modifier.padding(bottom = 16.dp)
                 )
 
-                // Display the relevant component based on the switcher
                 if (isLogin) {
-                    LoginComponent()
+                    LoginComponent(navHostController = navController)
                 } else {
                     RegisterComponent()
                 }

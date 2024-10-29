@@ -7,11 +7,11 @@ import com.squareup.moshi.JsonClass
 
 @JsonClass(generateAdapter = true)
 data class GetAllProductResponseModel(
-    @Json(name = "products")
+    @Json(name = "data")
     val products: List<Product>,
     @Json(name = "totalCount")
     val totalCount: Int,
-    @Json(name = "currentPage")
+    @Json(name = "pageNumber")
     val currentPage: Int,
     @Json(name = "totalPages")
     val totalPages: Int

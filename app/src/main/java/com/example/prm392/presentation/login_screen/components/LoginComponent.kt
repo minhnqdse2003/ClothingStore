@@ -1,3 +1,4 @@
+import android.util.Log
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
@@ -15,9 +16,11 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
+import androidx.navigation.NavHostController
 import com.example.prm392.domain.model.User.Request.LoginRequestModel
 import com.example.prm392.presentation.detail_screen.components.LoadingScreen
 import com.example.prm392.presentation.login_screen.LoginViewModel
+import com.example.prm392.presentation.navigation.Screen
 import com.example.prm392.ui.theme.icons.LockIcon
 import com.example.prm392.ui.theme.icons.UserIcon
 import com.example.prm392.utils.Result
@@ -25,6 +28,7 @@ import com.example.prm392.utils.Result
 @Composable
 fun LoginComponent(
     viewModel: LoginViewModel = hiltViewModel(),
+    navHostController: NavHostController
 ) {
     var username by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
@@ -36,7 +40,6 @@ fun LoginComponent(
     val passwordFocusRequester = remember { FocusRequester() }
     val focusManager = LocalFocusManager.current
 
-    // Observe lifecycle to trigger auto-focus on username field when the component appears
     val lifecycleOwner = LocalLifecycleOwner.current
     DisposableEffect(lifecycleOwner) {
         val observer = LifecycleEventObserver { _, event ->
@@ -142,6 +145,12 @@ fun LoginComponent(
 
         when (loginServiceResponse) {
             is Result.Loading -> LoadingScreen()
+
+            is Result.Success -> {
+                navHostController.navigate(Screen.HomeScreen.route)
+                Log.d("LoginComps", "Success" )
+            }
+
             is Result.Error -> {
                 Text(
                     loginServiceResponse.error.localizedMessage ?: "An error occurred."
