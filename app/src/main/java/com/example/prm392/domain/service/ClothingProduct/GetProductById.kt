@@ -1,25 +1,22 @@
 package com.example.prm392.domain.service.ClothingProduct
 
 import com.example.prm392.data.dto.products.get_all.Category
-import com.example.prm392.data.dto.products.get_all.GetAllProductResponseModel
 import com.example.prm392.data.dto.products.get_all.Product
-import com.example.prm392.data.repository.ClothingProductRepository
-import kotlinx.coroutines.delay
+import com.example.prm392.data.dto.products.get_by_id.GetProductByIdResponseModel
+import com.example.prm392.domain.repository.IClothingProductRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import javax.inject.Inject
-import kotlin.math.ceil
 
-class GetAllClothing @Inject constructor(
-    private val repository: ClothingProductRepository
+class GetProductById @Inject constructor(
+    private val repository: IClothingProductRepository
 ) {
     suspend operator fun invoke(
-        page: Int,
-        pageCount: Int
-    ): Flow<GetAllProductResponseModel> = flow {
-        val totalCount = 200
+        productId: Int
+    ) : Flow<GetProductByIdResponseModel> = flow {
+//        emit(repository.getClothingById(productId))
 
-        val mockProducts = List(totalCount) { index ->
+        val mockProducts = List(200) { index ->
             Product(
                 productID = index,
                 productName = "Product ${index.toString()}",
@@ -35,24 +32,11 @@ class GetAllClothing @Inject constructor(
             )
         }
 
-        // Calculate pagination parameters
-        val totalPages = ceil(totalCount / pageCount.toDouble()).toInt()
-        val startIndex = (page - 1) * pageCount
-        val endIndex = (startIndex + pageCount).coerceAtMost(totalCount)
-
-        // Slice the mock products list to simulate paginated data
-        val paginatedProducts = mockProducts.subList(startIndex, endIndex)
-
-        // Emit the mock paginated response
-
-        delay(2000L)
-
         emit(
-            GetAllProductResponseModel(
-                products = paginatedProducts,
-                totalCount = totalCount,
-                currentPage = page,
-                totalPages = totalPages
+            GetProductByIdResponseModel(
+                data = mockProducts.find { it -> it.productID == productId } ?: mockProducts.first(),
+                status = 200,
+                message = "Success"
             )
         )
     }

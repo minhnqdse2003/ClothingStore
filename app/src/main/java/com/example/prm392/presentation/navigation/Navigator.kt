@@ -12,6 +12,7 @@ sealed class Screen(override val route: String) : NavigationDestination {
     object HomeScreen : Screen("home")
     object SearchScreen : Screen("search")
     object DetailScreen : Screen("detail/{title}")
+    object ProductDetailScreen : Screen("product_detail")
     object ChatScreen : Screen("chat")
     object CartScreen : Screen("cart")
     object ProfileScreen : Screen("profile")

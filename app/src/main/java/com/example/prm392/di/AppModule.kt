@@ -1,14 +1,19 @@
 package com.example.prm392.di
 
 import android.content.Context
+import com.example.prm392.data.ICategoryApi
 import com.example.prm392.data.IClothingProductApi
 import com.example.prm392.data.IProductApi
 import com.example.prm392.data.IUserApi
+import com.example.prm392.data.repository.CategoryRepository
 import com.example.prm392.data.repository.ClothingProductRepository
 import com.example.prm392.data.repository.ProductRepository
 import com.example.prm392.data.repository.UserRepository
+import com.example.prm392.domain.service.Category.CategoryService
+import com.example.prm392.domain.service.Category.GetAllCategoryService
 import com.example.prm392.domain.service.ClothingProduct.ClothingProductService
 import com.example.prm392.domain.service.ClothingProduct.GetAllClothing
+import com.example.prm392.domain.service.ClothingProduct.GetProductById
 import com.example.prm392.domain.service.GetProductDataService
 import com.example.prm392.domain.service.GetSearchProductDataService
 import com.example.prm392.domain.service.Services
@@ -32,7 +37,6 @@ import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
 import retrofit2.converter.moshi.MoshiConverterFactory
 import java.util.concurrent.TimeUnit
-import javax.annotation.Signed
 import javax.inject.Singleton
 
 @Module
@@ -66,7 +70,7 @@ object AppModule {
 
     @Provides
     @Singleton
-    fun provideRetrofit(moshi: Moshi,okHttpClient: OkHttpClient): Retrofit {
+    fun provideRetrofit(moshi: Moshi, okHttpClient: OkHttpClient): Retrofit {
         return Retrofit.Builder()
             .baseUrl(Constants.BASE_URL)
             .client(okHttpClient)
@@ -100,7 +104,7 @@ object AppModule {
 
     @Provides
     @Singleton
-    fun provideNavigation() : Navigator = Navigator()
+    fun provideNavigation(): Navigator = Navigator()
 
     @Provides
     @Singleton
@@ -135,13 +139,16 @@ object AppModule {
 
     @Provides
     @Singleton
-    fun provideClothingProductApi(retrofit: Retrofit) : IClothingProductApi {
+    fun provideClothingProductApi(retrofit: Retrofit): IClothingProductApi {
         return retrofit.create(IClothingProductApi::class.java)
     }
 
     @Provides
     @Singleton
-    fun provideClothingProductRepository(api: IClothingProductApi, headerProcessing: HeaderProcessing): ClothingProductRepository {
+    fun provideClothingProductRepository(
+        api: IClothingProductApi,
+        headerProcessing: HeaderProcessing
+    ): ClothingProductRepository {
         return ClothingProductRepository(api, headerProcessing)
     }
 
@@ -149,7 +156,31 @@ object AppModule {
     @Singleton
     fun provideClothingProductServices(repository: ClothingProductRepository): ClothingProductService {
         return ClothingProductService(
-           getAllClothing = GetAllClothing(repository)
+            getAllClothing = GetAllClothing(repository),
+            getProductById = GetProductById(repository)
+        )
+    }
+
+    @Provides
+    @Singleton
+    fun provideCategoryApi(retrofit: Retrofit): ICategoryApi {
+        return retrofit.create(ICategoryApi::class.java)
+    }
+
+    @Provides
+    @Singleton
+    fun provideCategoryRepository(
+        api: ICategoryApi,
+        headerProcessing: HeaderProcessing
+    ): CategoryRepository {
+        return CategoryRepository(api, headerProcessing)
+    }
+
+    @Provides
+    @Singleton
+    fun provideCategoryServices(repository: CategoryRepository): CategoryService {
+        return CategoryService(
+            getAllCategoryService = GetAllCategoryService(repository)
         )
     }
 }

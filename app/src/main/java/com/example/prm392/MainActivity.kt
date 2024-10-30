@@ -20,7 +20,7 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             PRM392Theme {
-                AppNavigation(navigator,tokenSlice)
+                AppNavigation(tokenSlice)
             }
         }
     }
