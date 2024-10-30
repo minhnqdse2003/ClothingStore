@@ -67,7 +67,7 @@ fun SearchScreen(
                             contentDescription = null
                         )
                     }
-                }
+                },
             )
         }
     ) { paddingValues ->

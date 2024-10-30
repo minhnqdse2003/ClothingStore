@@ -9,6 +9,7 @@ import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Message
 import androidx.compose.material.icons.rounded.PriceChange
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -23,10 +24,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.navigation.NavController
 import com.example.prm392.presentation.MainViewModel
 import com.example.prm392.presentation.detail_screen.components.ErrorScreen
 import com.example.prm392.presentation.detail_screen.components.LoadingScreen
 import com.example.prm392.presentation.detail_screen.components.ProductData
+import com.example.prm392.presentation.navigation.Screen
 import com.example.prm392.utils.Constants
 import com.example.prm392.utils.Result
 
@@ -34,7 +37,8 @@ import com.example.prm392.utils.Result
 @Composable
 fun DetailScreen(
     title: String,
-    viewModel: MainViewModel = hiltViewModel()
+    viewModel: MainViewModel = hiltViewModel(),
+    onChatClick: (String) -> Unit
 ) {
     LaunchedEffect(
         key1 = true,
@@ -59,6 +63,16 @@ fun DetailScreen(
                     IconButton(onClick = {}) {
                         Icon(
                             imageVector = Icons.Rounded.PriceChange,
+                            contentDescription = null
+                        )
+                    }
+                },
+                actions = {
+                    IconButton( onClick =  {
+                        onChatClick("Chat")
+                    }) {
+                        Icon(
+                            imageVector = Icons.Filled.Message,
                             contentDescription = null
                         )
                     }

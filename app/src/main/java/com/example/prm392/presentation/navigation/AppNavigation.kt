@@ -13,6 +13,7 @@ import com.example.prm392.presentation.components.animations.Animations
 import com.example.prm392.presentation.detail_screen.DetailScreen
 import com.example.prm392.presentation.home_screen.HomeScreen
 import com.example.prm392.presentation.login_screen.LoginScreen
+import com.example.prm392.presentation.chat_screen.ChatScreen
 import com.example.prm392.utils.TokenSlice
 
 @Composable
@@ -22,7 +23,6 @@ fun AppNavigation(
 ) {
     val navController = rememberNavController()
     val destination = navigator.destination.collectAsState()
-
     LaunchedEffect(destination.value) {
         if(navController.currentDestination?.route == Screen.LoginScreen.route)
             navController.navigate(Screen.SearchScreen.route)
@@ -32,7 +32,7 @@ fun AppNavigation(
 
         when (destination.value) {
             is Screen.LoginScreen -> {
-                if (tokenSlice.tokenExists()) {
+                if (!tokenSlice.tokenExists()) {
                     navController.navigate(Screen.SearchScreen.route)
                 } else {
                     navController.navigate(Screen.LoginScreen.route)
@@ -62,6 +62,9 @@ fun AppNavigation(
                 }
             )
         }
+        composable (route = Screen.ChatScreen.route){
+            ChatScreen()
+        }
 
         composable(
             route = "${Screen.DetailScreen.route}/{title}",
@@ -74,7 +77,9 @@ fun AppNavigation(
             exitTransition = { Animations.horizontalSlideOut() }
         ) { navBackStackEntry ->
             navBackStackEntry.arguments?.getString("title").let { title ->
-                DetailScreen(title!!)
+                DetailScreen(title!! , onChatClick = {
+                    navController.navigate(route = Screen.ChatScreen.route)
+                })
             }
         }
 

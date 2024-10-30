@@ -89,9 +89,14 @@ dependencies {
 
     implementation("com.squareup.okhttp3:logging-interceptor:4.12.0")
     implementation("androidx.hilt:hilt-navigation-compose:1.2.0")
+    //
+    implementation("androidx.compose.foundation:foundation-layout:1.5.1")
+
 
     //storage
     implementation("androidx.datastore:datastore-preferences:1.0.0")
     //swipe to refresh
     implementation("com.google.accompanist:accompanist-swiperefresh:0.36.0")
+    // Google message services
+    implementation("com.google.gms:google-services:4.4.2")
 }

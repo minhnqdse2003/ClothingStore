@@ -60,4 +60,8 @@ class MainViewModel @Inject constructor(
                 _searchDataResponse.value = Result.Success(result)
             }
     }
+
+    fun sendMessage(message: String) {
+
+    }
 }
