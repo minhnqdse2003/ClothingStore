@@ -130,7 +130,7 @@ fun AppNavigation(
                     enter = fadeIn() + slideInHorizontally(initialOffsetX = { it }),
                     exit = fadeOut() + slideOutHorizontally(targetOffsetX = { it })
                 ) {
-                    CartScreen(modifier = Modifier.padding(paddingValues))
+                    CartScreen(modifier = Modifier.padding(paddingValues),navController = navController)
                 }
             }
         }

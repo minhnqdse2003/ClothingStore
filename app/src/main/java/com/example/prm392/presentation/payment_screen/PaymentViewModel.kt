@@ -7,6 +7,7 @@ import android.content.pm.PackageManager
 import android.location.Geocoder
 import android.location.Location
 import android.util.Log
+import androidx.compose.runtime.mutableStateOf
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
@@ -43,6 +44,8 @@ class PaymentViewModel @Inject constructor(
     private val _product = MutableStateFlow<Result<Product>>(Result.Idle)
     val product = _product.asStateFlow()
 
+    private val _selectedLocation = mutableStateOf<Int>(1)
+
     private val cartItems = mutableListOf<CartItemRequestDto>()
 
     fun getCurrentProduct(id : Int){
@@ -72,7 +75,8 @@ class PaymentViewModel @Inject constructor(
         val requestModel = _address.value?.let {
             OrderRequestDto(
                 cartItems = cartItems,
-                billingAddress = it
+                billingAddress = it,
+                _selectedLocation.value
             )
         }
         Log.d("Order", requestModel.toString())

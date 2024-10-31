@@ -1,9 +1,12 @@
 package com.example.prm392.utils.modifierUtils
 
+import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.border
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.composed
 import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.Dp
@@ -45,3 +48,14 @@ fun Modifier.topBorder(strokeWidth: Dp, color: Color) = composed(
         }
     }
 )
+
+fun BlurredBorder(width: Dp): BorderStroke {
+    return BorderStroke(
+        width = width,
+        brush = Brush.sweepGradient(listOf(Color.Gray.copy(alpha = 0.1f), Color.Gray))
+    )
+}
+
+fun Modifier.blurredBorder(width: Dp): Modifier {
+    return this.then(Modifier.border(BlurredBorder(width)))
+}

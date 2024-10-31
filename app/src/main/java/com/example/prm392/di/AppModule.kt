@@ -2,14 +2,21 @@ package com.example.prm392.di
 
 import android.app.Application
 import android.content.Context
+import com.example.prm392.data.ICartApi
 import com.example.prm392.data.ICategoryApi
 import com.example.prm392.data.IClothingProductApi
 import com.example.prm392.data.IProductApi
 import com.example.prm392.data.IUserApi
+import com.example.prm392.data.repository.CartRepository
 import com.example.prm392.data.repository.CategoryRepository
 import com.example.prm392.data.repository.ClothingProductRepository
 import com.example.prm392.data.repository.ProductRepository
 import com.example.prm392.data.repository.UserRepository
+import com.example.prm392.domain.service.Cart.AddUserCartService
+import com.example.prm392.domain.service.Cart.CartService
+import com.example.prm392.domain.service.Cart.GetUserCartService
+import com.example.prm392.domain.service.Cart.RemoveUserCartService
+import com.example.prm392.domain.service.Cart.UpdateUserCartItemQuantityService
 import com.example.prm392.domain.service.Category.CategoryService
 import com.example.prm392.domain.service.Category.GetAllCategoryService
 import com.example.prm392.domain.service.ClothingProduct.ClothingProductService
@@ -190,6 +197,32 @@ object AppModule {
     fun provideCategoryServices(repository: CategoryRepository): CategoryService {
         return CategoryService(
             getAllCategoryService = GetAllCategoryService(repository)
+        )
+    }
+
+    @Provides
+    @Singleton
+    fun provideCartApi(retrofit: Retrofit): ICartApi {
+        return retrofit.create(ICartApi::class.java)
+    }
+
+    @Provides
+    @Singleton
+    fun provideCartRepository(
+        api: ICartApi,
+        headerProcessing: HeaderProcessing
+    ): CartRepository {
+        return CartRepository(api, headerProcessing)
+    }
+
+    @Provides
+    @Singleton
+    fun provideCartServices(repository: CartRepository): CartService {
+        return CartService(
+            getUserCartService = GetUserCartService(repository),
+            addUserCartService = AddUserCartService(repository),
+            removeUserCartService = RemoveUserCartService(repository),
+            updateUserCartItemQuantityService = UpdateUserCartItemQuantityService(repository)
         )
     }
 }

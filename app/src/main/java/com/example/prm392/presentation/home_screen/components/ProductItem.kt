@@ -31,6 +31,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.example.prm392.data.dto.products.get_all.Product
 import coil3.compose.AsyncImage
+import com.example.prm392.ui.theme.Vegur
 
 @Composable
 fun ProductItem(product: Product, onClick: () -> Unit) {
@@ -52,7 +53,7 @@ fun ProductItem(product: Product, onClick: () -> Unit) {
             text = product.productName,
             style = MaterialTheme.typography.titleMedium.copy(
                 fontWeight = FontWeight.Bold,
-                fontFamily = FontFamily.Serif
+                fontFamily = Vegur
             )
         )
         Text(
@@ -60,7 +61,9 @@ fun ProductItem(product: Product, onClick: () -> Unit) {
             maxLines = 1,
             overflow = TextOverflow.Ellipsis,
             style = MaterialTheme.typography.bodyLarge.copy(
-                color = Color.Gray
+                color = Color.Gray,
+                fontWeight = FontWeight.Normal,
+                fontFamily = Vegur
             ),
             modifier = Modifier.padding(top = 4.dp)
         )
@@ -69,7 +72,7 @@ fun ProductItem(product: Product, onClick: () -> Unit) {
             text = "${product.price.toString()} VNĐ",
             style = MaterialTheme.typography.titleMedium.copy(
                 fontWeight = FontWeight.Bold,
-                fontFamily = FontFamily.SansSerif
+                fontFamily = Vegur
             ),
             color = Color.Red,
             modifier = Modifier.padding(bottom = 4.dp)

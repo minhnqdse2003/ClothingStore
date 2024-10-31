@@ -8,4 +8,6 @@ data class OrderRequestDto (
     val cartItems : List<CartItemRequestDto>,
     @Json(name = "billingAddress")
     val billingAddress : String,
+    @Json(name = "LocationId")
+    val locationId : Int
 )

@@ -40,6 +40,7 @@ import coil3.compose.AsyncImage
 import com.example.prm392.data.dto.products.get_all.Product
 import com.example.prm392.domain.model.Cart.request.CartItemRequestDto
 import com.example.prm392.presentation.navigation.Screen
+import com.example.prm392.ui.theme.Vegur
 import com.example.prm392.utils.MySpacer
 import com.example.prm392.utils.Result
 
@@ -81,7 +82,9 @@ fun ProductDetailsScreen(
                 .fillMaxWidth(),
         ) {
             FloatingActionButton(
-                onClick = { /* Add your onClick logic */ },
+                onClick = {
+                    navController.navigate(Screen.CartScreen.route)
+                },
                 containerColor = Color.White,
                 modifier = Modifier
                     .weight(.5f)
@@ -100,8 +103,8 @@ fun ProductDetailsScreen(
                     Text(
                         text = "ADD TO CART",
                         style = MaterialTheme.typography.bodyMedium.copy(
-                            fontFamily = FontFamily.Serif,
-                            fontWeight = FontWeight.SemiBold,
+                            fontFamily = Vegur,
+                            fontWeight = FontWeight.Bold,
                             color = Color.Black
                         )
                     )
@@ -124,8 +127,8 @@ fun ProductDetailsScreen(
                 Text(
                     text = "BUY NOW",
                     style = MaterialTheme.typography.bodyMedium.copy(
-                        fontFamily = FontFamily.Serif,
-                        fontWeight = FontWeight.SemiBold
+                        fontFamily = Vegur,
+                        fontWeight = FontWeight.Bold,
                     )
                 )
             }
@@ -152,8 +155,8 @@ fun ProductDetailsScreen(
                 Text(
                     text = "Detail Product",
                     style = MaterialTheme.typography.titleLarge.copy(
-                        fontFamily = FontFamily.SansSerif,
-                        fontWeight = FontWeight.Bold
+                        fontFamily = Vegur,
+                        fontWeight = FontWeight.Bold,
                     )
                 )
 
@@ -218,8 +221,8 @@ fun ProductDetailsContent(product: Product) {
             Text(
                 text = product.productName,
                 style = MaterialTheme.typography.titleLarge.copy(
-                    fontFamily = FontFamily.SansSerif,
-                    fontWeight = FontWeight.SemiBold
+                    fontFamily = Vegur,
+                    fontWeight = FontWeight.Bold,
                 )
             )
             MySpacer(8.dp)
@@ -227,6 +230,7 @@ fun ProductDetailsContent(product: Product) {
                 text = "${product.price} VNĐ",
                 style = MaterialTheme.typography.titleLarge.copy(
                     color = Color.Red,
+                    fontFamily = Vegur,
                     fontWeight = FontWeight.Bold,
                 )
             )
@@ -235,7 +239,8 @@ fun ProductDetailsContent(product: Product) {
                 text = product.fullDescription,
                 style = MaterialTheme.typography.bodyLarge.copy(
                     color = Color.Gray,
-                    fontFamily = FontFamily.Serif
+                    fontFamily = Vegur,
+                    fontWeight = FontWeight.Normal,
                 )
             )
         }

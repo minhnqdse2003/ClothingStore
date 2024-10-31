@@ -21,9 +21,9 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import coil3.compose.rememberAsyncImagePainter
 import com.example.prm392.R
+import com.example.prm392.data.dto.cart.CartResponseModel
 import com.example.prm392.data.dto.products.get_all.Product
 import com.example.prm392.domain.model.Cart.request.CartItemRequestDto
-import com.example.prm392.presentation.payment.PaymentViewModel
 import com.example.prm392.presentation.product_screen.LoadingIndicator
 import com.example.prm392.utils.Result
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
@@ -35,7 +35,9 @@ import com.google.accompanist.permissions.rememberPermissionState
 fun PaymentScreen(
     viewModel: PaymentViewModel = hiltViewModel(),
     model: CartItemRequestDto?,
-    navController: NavController
+    models: List<CartResponseModel>? = emptyList(),
+    navController: NavController,
+    isSingleProduct:Boolean? = true
 ) {
     val address by viewModel.address.collectAsState()
     val product by viewModel.product.collectAsState()
