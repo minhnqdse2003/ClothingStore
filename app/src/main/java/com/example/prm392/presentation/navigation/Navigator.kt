@@ -13,14 +13,13 @@ sealed class Screen(override val route: String) : NavigationDestination {
     object SearchScreen : Screen("search")
     object DetailScreen : Screen("detail/{title}")
     object ProductDetailScreen : Screen("product_detail")
+    object ProductPaymentScreen : Screen("payment")
     object ChatScreen : Screen("chat")
     object CartScreen : Screen("cart")
     object ProfileScreen : Screen("profile")
 }
 
 class Navigator {
-
-    // StateFlow to hold the current destination, with LoginScreen as the initial destination
     private val _destination = MutableStateFlow<NavigationDestination>(Screen.LoginScreen)
     val destination = _destination.asStateFlow()
 

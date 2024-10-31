@@ -1,5 +1,6 @@
 package com.example.prm392.di
 
+import android.app.Application
 import android.content.Context
 import com.example.prm392.data.ICategoryApi
 import com.example.prm392.data.IClothingProductApi
@@ -25,6 +26,8 @@ import com.example.prm392.presentation.navigation.Navigator
 import com.example.prm392.utils.Constants
 import com.example.prm392.utils.HeaderProcessing
 import com.example.prm392.utils.TokenSlice
+import com.google.android.gms.location.FusedLocationProviderClient
+import com.google.android.gms.location.LocationServices
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
 import dagger.Module
@@ -66,6 +69,12 @@ object AppModule {
             .readTimeout(10000L, TimeUnit.MILLISECONDS)
             .writeTimeout(10000L, TimeUnit.MILLISECONDS)
             .build()
+    }
+
+    @Provides
+    @Singleton
+    fun provideFusedLocationProviderClient(application: Application): FusedLocationProviderClient {
+        return LocationServices.getFusedLocationProviderClient(application)
     }
 
     @Provides

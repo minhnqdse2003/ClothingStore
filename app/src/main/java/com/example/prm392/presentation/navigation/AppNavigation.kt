@@ -17,12 +17,14 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
+import com.example.prm392.domain.model.Cart.request.CartItemRequestDto
 import com.example.prm392.presentation.SearchScreen
 import com.example.prm392.presentation.detail_screen.DetailScreen
 import com.example.prm392.presentation.home_screen.HomeScreen
 import com.example.prm392.presentation.login_screen.LoginScreen
 import com.example.prm392.presentation.chat_screen.ChatScreen
 import com.example.prm392.presentation.cart_screen.CartScreen
+import com.example.prm392.presentation.payment_screen.PaymentScreen
 import com.example.prm392.presentation.product_screen.ProductDetailsScreen
 import com.example.prm392.presentation.profile_screen.ProfileScreen
 import com.example.prm392.utils.TokenSlice
@@ -146,6 +148,17 @@ fun AppNavigation(
                 ) {
                     ProfileScreen(modifier = Modifier.padding(paddingValues))
                 }
+            }
+        }
+
+        composable(route = Screen.ProductPaymentScreen.route) {
+            AnimatedVisibility(
+                visible = true,
+                enter = fadeIn() + slideInHorizontally(initialOffsetX = { it }),
+                exit = fadeOut() + slideOutHorizontally(targetOffsetX = { it })
+            ) {
+                val model:CartItemRequestDto? = navController.previousBackStackEntry?.savedStateHandle?.get<CartItemRequestDto>("Buy")
+                PaymentScreen(model = model, navController = navController)
             }
         }
     }

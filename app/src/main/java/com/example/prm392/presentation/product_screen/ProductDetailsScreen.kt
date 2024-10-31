@@ -1,7 +1,6 @@
 package com.example.prm392.presentation.product_screen
 
 import android.util.Log
-import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -16,14 +15,11 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.windowInsetsPadding
-import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.shape.CutCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.outlined.ShoppingCart
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.FloatingActionButton
-import androidx.compose.material3.FloatingActionButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -33,7 +29,6 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontFamily
@@ -43,6 +38,8 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import coil3.compose.AsyncImage
 import com.example.prm392.data.dto.products.get_all.Product
+import com.example.prm392.domain.model.Cart.request.CartItemRequestDto
+import com.example.prm392.presentation.navigation.Screen
 import com.example.prm392.utils.MySpacer
 import com.example.prm392.utils.Result
 
@@ -53,6 +50,18 @@ fun ProductDetailsScreen(
     viewModel: ProductDetailsViewModel = hiltViewModel()
 ) {
     val product = viewModel.clothingProduct.collectAsState().value
+
+    val onClickBuy = { requestModel: CartItemRequestDto ->
+        navController.navigate(Screen.ProductPaymentScreen.route) {
+            navController.currentBackStackEntry?.savedStateHandle?.set(
+                key = "Buy",
+                value = CartItemRequestDto(
+                    productID = requestModel.productID,
+                    quantity = requestModel.quantity
+                )
+            )
+        }
+    }
 
     LaunchedEffect(id) {
         Log.d("Test", id)
@@ -102,7 +111,11 @@ fun ProductDetailsScreen(
             Spacer(modifier = Modifier.width(16.dp))
 
             FloatingActionButton(
-                onClick = { /* Add your onClick logic */ },
+                onClick = {
+                    onClickBuy(
+                        CartItemRequestDto(id.toInt(), 1)
+                    )
+                },
                 containerColor = Color.Black,
                 contentColor = Color.White,
                 modifier = Modifier

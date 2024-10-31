@@ -8,10 +8,10 @@ import retrofit2.http.Query
 
 interface IClothingProductApi {
 
-    @GET("products")
+    @GET("api/v1/products")
     suspend fun getAllClothingProduct(
-        @Query("page") page: Int,
-        @Query("limit") pageCount: Int
+        @Query("PageNumber") page: Int,
+        @Query("PageSize") pageCount: Int
     ) : GetAllProductResponseModel
 
     @GET("api/v1/products/{Id}")
