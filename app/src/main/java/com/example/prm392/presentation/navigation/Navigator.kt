@@ -14,6 +14,7 @@ sealed class Screen(override val route: String) : NavigationDestination {
     object DetailScreen : Screen("detail/{title}")
     object ProductDetailScreen : Screen("product_detail")
     object ProductPaymentScreen : Screen("payment")
+    object MapScreen : Screen("map")
     object ChatScreen : Screen("chat")
     object CartScreen : Screen("cart")
     object ProfileScreen : Screen("profile")

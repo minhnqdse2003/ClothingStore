@@ -2,6 +2,7 @@ plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.compose.compiler)
+    alias(libs.plugins.map.secret)
     id("kotlin-kapt")
     id("com.google.dagger.hilt.android")
     id("kotlin-parcelize")
@@ -42,6 +43,7 @@ android {
         jvmTarget = "1.8"
     }
     buildFeatures {
+        buildConfig = true
         compose = true
     }
     composeOptions {
@@ -97,4 +99,9 @@ dependencies {
     implementation("androidx.datastore:datastore-preferences:1.0.0")
     //swipe to refresh
     implementation("com.google.accompanist:accompanist-swiperefresh:0.36.0")
+    //map
+    implementation("com.google.android.gms:play-services-maps:19.0.0")
+    implementation("com.google.android.libraries.mapsplatform.secrets-gradle-plugin:secrets-gradle-plugin:2.0.1")
+    implementation("com.google.maps.android:maps-compose:6.1.0")
+    implementation("com.google.maps.android:android-maps-utils:3.9.0")
 }

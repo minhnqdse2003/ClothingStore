@@ -6,11 +6,13 @@ import com.example.prm392.data.ICartApi
 import com.example.prm392.data.ICategoryApi
 import com.example.prm392.data.IClothingProductApi
 import com.example.prm392.data.IProductApi
+import com.example.prm392.data.IStoreLocationApi
 import com.example.prm392.data.IUserApi
 import com.example.prm392.data.repository.CartRepository
 import com.example.prm392.data.repository.CategoryRepository
 import com.example.prm392.data.repository.ClothingProductRepository
 import com.example.prm392.data.repository.ProductRepository
+import com.example.prm392.data.repository.StoreLocationRepository
 import com.example.prm392.data.repository.UserRepository
 import com.example.prm392.domain.service.Cart.AddUserCartService
 import com.example.prm392.domain.service.Cart.CartService
@@ -29,6 +31,8 @@ import com.example.prm392.domain.service.User.GetAuthUserService
 import com.example.prm392.domain.service.User.LoginService
 import com.example.prm392.domain.service.User.RegisterService
 import com.example.prm392.domain.service.User.UserService
+import com.example.prm392.domain.service.store_location.GetAllStoreLocationService
+import com.example.prm392.domain.service.store_location.StoreLocationService
 import com.example.prm392.presentation.navigation.Navigator
 import com.example.prm392.utils.Constants
 import com.example.prm392.utils.HeaderProcessing
@@ -223,6 +227,26 @@ object AppModule {
             addUserCartService = AddUserCartService(repository),
             removeUserCartService = RemoveUserCartService(repository),
             updateUserCartItemQuantityService = UpdateUserCartItemQuantityService(repository)
+        )
+    }
+
+    @Provides
+    @Singleton
+    fun provideStoreLocationApi(retrofit: Retrofit): IStoreLocationApi {
+        return retrofit.create(IStoreLocationApi::class.java)
+    }
+
+    @Provides
+    @Singleton
+    fun provideStoreLocationRepository(api: IStoreLocationApi): StoreLocationRepository {
+        return StoreLocationRepository(api)
+    }
+
+    @Provides
+    @Singleton
+    fun provideStoreLocationService(repository: StoreLocationRepository): StoreLocationService {
+        return StoreLocationService(
+            getAllStoreLocation = GetAllStoreLocationService(repository)
         )
     }
 }

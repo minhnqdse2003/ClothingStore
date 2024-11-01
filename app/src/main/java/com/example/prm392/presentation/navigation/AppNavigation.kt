@@ -25,6 +25,7 @@ import com.example.prm392.presentation.home_screen.HomeScreen
 import com.example.prm392.presentation.login_screen.LoginScreen
 import com.example.prm392.presentation.chat_screen.ChatScreen
 import com.example.prm392.presentation.cart_screen.CartScreen
+import com.example.prm392.presentation.map_screen.MapScreen
 import com.example.prm392.presentation.payment_screen.PaymentScreen
 import com.example.prm392.presentation.product_screen.ProductDetailsScreen
 import com.example.prm392.presentation.profile_screen.ProfileScreen
@@ -161,6 +162,16 @@ fun AppNavigation(
                 val model:CartItemRequestDto? = navController.previousBackStackEntry?.savedStateHandle?.get<CartItemRequestDto>("Buy")
                 val models = navController.previousBackStackEntry?.savedStateHandle?.get<List<CartProductsResponseModelData>>("Buy Cart")
                 PaymentScreen(model = model, navController = navController, models = models)
+            }
+        }
+
+        composable(route = Screen.MapScreen.route) {
+            AnimatedVisibility(
+                visible = true,
+                enter = fadeIn() + slideInHorizontally(initialOffsetX = { it }),
+                exit = fadeOut() + slideOutHorizontally(targetOffsetX = { it })
+            ) {
+                MapScreen(navController = navController)
             }
         }
     }

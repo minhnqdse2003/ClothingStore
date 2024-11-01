@@ -4,4 +4,5 @@ plugins {
     alias(libs.plugins.kotlin.android) apply false
 
     id("com.google.dagger.hilt.android") version "2.52" apply false
+    alias(libs.plugins.map.secret) apply false
 }

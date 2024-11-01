@@ -56,12 +56,10 @@ fun CartScreen(
     ) {
         when (cartResponse) {
             is Result.Loading -> {
-                // Display loading indicator
                 CircularProgressIndicator(modifier = Modifier.align(Alignment.CenterHorizontally))
             }
 
             is Result.Error -> {
-                // Handle error
                 Text(
                     text = "Error loading cart: ${(cartResponse as Result.Error).error.message}",
                     color = Color.Red,
@@ -177,7 +175,7 @@ fun CartScreen(
 
                     Button(
                         onClick = {
-                            if (selectedProductIds.size != 0) {
+                            if (selectedProductIds.isNotEmpty()) {
                                 val cartProduct =
                                     (cartResponse as Result.Success<CartResponseDto>).data.data.product
                                         .filter { selectedProductIds.contains(it.product.productID) }

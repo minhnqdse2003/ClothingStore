@@ -4,6 +4,7 @@ import android.Manifest
 import android.annotation.SuppressLint
 import android.app.Application
 import android.content.pm.PackageManager
+import android.location.Address
 import android.location.Geocoder
 import android.location.Location
 import android.util.Log
@@ -14,12 +15,16 @@ import androidx.lifecycle.viewModelScope
 import com.example.prm392.data.dto.cart.CartProductsResponseModelData
 import com.example.prm392.data.dto.products.get_all.Product
 import com.example.prm392.data.dto.products.get_by_id.toGetProductByIdResponseDto
+import com.example.prm392.data.dto.store_location.get_all.StoreLocation
 import com.example.prm392.domain.model.Cart.request.CartItemRequestDto
 import com.example.prm392.domain.model.Cart.request.CartItemRequestViewModel
 import com.example.prm392.domain.model.Order.OrderRequestDto
 import com.example.prm392.domain.service.ClothingProduct.ClothingProductService
+import com.example.prm392.domain.service.store_location.StoreLocationService
 import com.example.prm392.utils.Result
 import com.google.android.gms.location.FusedLocationProviderClient
+import com.google.android.gms.location.Priority
+import com.squareup.moshi.Moshi
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -27,6 +32,7 @@ import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.suspendCancellableCoroutine
+import okhttp3.OkHttpClient
 import java.io.IOException
 import java.util.*
 import javax.inject.Inject
@@ -37,11 +43,18 @@ import kotlin.coroutines.resumeWithException
 class PaymentViewModel @Inject constructor(
     application: Application,
     private val fusedLocationClient: FusedLocationProviderClient,
-    private val service: ClothingProductService
+    private val service: ClothingProductService,
+    private val storeLocationService: StoreLocationService,
 ) : AndroidViewModel(application) {
 
     private val _address = MutableStateFlow<String?>("Fetching address...")
     val address = _address.asStateFlow()
+
+    private val _currentLocationLatLng = MutableStateFlow<LocationModel?>(null)
+    val currentLocationLatLng = _currentLocationLatLng.asStateFlow()
+
+    private val _storeLocations = MutableStateFlow<Result<List<StoreLocation>>>(Result.Idle)
+    val storeLocations = _storeLocations.asStateFlow()
 
     private val _product = MutableStateFlow<Result<CartItemRequestViewModel>>(Result.Idle)
     val product = _product.asStateFlow()
@@ -78,6 +91,22 @@ class PaymentViewModel @Inject constructor(
         }
     }
 
+    fun getAllStoreLocation() {
+        viewModelScope.launch {
+            storeLocationService.getAllStoreLocation()
+                .onStart {
+                    _storeLocations.value = Result.Loading // Set loading state
+                }
+                .catch { exception ->
+                    _storeLocations.value = Result.Error(exception) // Handle errors
+                }
+                .collect { locations ->
+                    _storeLocations.value = Result.Success(locations.data)
+                }
+        }
+    }
+
+
     fun placeOrder() {
         val requestModel = _address.value?.let {
             OrderRequestDto(
@@ -98,16 +127,11 @@ class PaymentViewModel @Inject constructor(
                 }
 
                 // Fetch last known location
-                val location = getLastKnownLocation()
+                val location = getCurrentLocation()
                 location?.let { currentLocation ->
-                    val geocoder = Geocoder(getApplication(), Locale.getDefault())
-                    val addresses = geocoder.getFromLocation(
-                        currentLocation.latitude,
-                        currentLocation.longitude,
-                        1
-                    )
-                    _address.value =
-                        addresses?.firstOrNull()?.getAddressLine(0) ?: "Address not found"
+                    _address.value = getCompleteAddressString(currentLocation.latitude,currentLocation.longitude)
+                    _currentLocationLatLng.value = LocationModel(Lat = currentLocation.latitude, Lng = currentLocation.longitude)
+                    getAllStoreLocation()
                 } ?: run {
                     _address.value = "Unable to fetch location"
                 }
@@ -119,6 +143,30 @@ class PaymentViewModel @Inject constructor(
         }
     }
 
+    private fun getCompleteAddressString(LATITUDE: Double, LONGITUDE: Double): String {
+        var strAdd = ""
+        val geocoder = Geocoder(getApplication(), Locale.getDefault())
+        try {
+            val addresses: List<Address>? = geocoder.getFromLocation(LATITUDE, LONGITUDE, 1)
+            if (addresses != null) {
+                val returnedAddress: Address = addresses[0]
+                val strReturnedAddress = StringBuilder("")
+
+                for (i in 0..returnedAddress.getMaxAddressLineIndex()) {
+                    strReturnedAddress.append(returnedAddress.getAddressLine(i)).append("\n")
+                }
+                strAdd = strReturnedAddress.toString()
+                Log.w("My Current loction address", strReturnedAddress.toString())
+            } else {
+                Log.w("My Current loction address", "No Address returned!")
+            }
+        } catch (e: java.lang.Exception) {
+            e.printStackTrace()
+            Log.w("My Current loction address", "Canont get Address!")
+        }
+        return strAdd
+    }
+
     @SuppressLint("MissingPermission")
     private suspend fun getLastKnownLocation() =
         suspendCancellableCoroutine<Location?> { continuation ->
@@ -126,6 +174,20 @@ class PaymentViewModel @Inject constructor(
                 .addOnSuccessListener { location -> continuation.resume(location) }
                 .addOnFailureListener { exception -> continuation.resumeWithException(exception) }
         }
+
+    @SuppressLint("MissingPermission")
+    private suspend fun getCurrentLocation(): Location? = suspendCancellableCoroutine { continuation ->
+        fusedLocationClient.getCurrentLocation(
+            Priority.PRIORITY_HIGH_ACCURACY,
+            null
+        )
+            .addOnSuccessListener { location ->
+                continuation.resume(location)
+            }
+            .addOnFailureListener { exception ->
+                continuation.resumeWithException(exception)
+            }
+    }
 
     private fun checkLocationPermission(): Boolean {
         val context = getApplication<Application>()
@@ -140,8 +202,8 @@ class PaymentViewModel @Inject constructor(
     }
 
     fun setDataFromCart(models: List<CartProductsResponseModelData>) {
-        var price:Double = 0.0
-        for(product in models){
+        var price: Double = 0.0
+        for (product in models) {
             price += product.product.price * product.quantity
             cartItems.add(
                 CartItemRequestDto(
@@ -158,3 +220,8 @@ class PaymentViewModel @Inject constructor(
     }
 
 }
+
+data class LocationModel (
+    val Lat: Double,
+    val Lng: Double
+)

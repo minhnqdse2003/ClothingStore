@@ -1,6 +1,5 @@
 package com.example.prm392.presentation.payment_screen
 
-import android.Manifest
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
@@ -12,7 +11,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -21,15 +19,15 @@ import androidx.navigation.NavController
 import coil3.compose.rememberAsyncImagePainter
 import com.example.prm392.R
 import com.example.prm392.data.dto.cart.CartProductsResponseModelData
+import com.example.prm392.data.dto.store_location.get_all.StoreLocation
 import com.example.prm392.domain.model.Cart.request.CartItemRequestDto
 import com.example.prm392.domain.model.Cart.request.CartItemRequestViewModel
+import com.example.prm392.presentation.navigation.Screen
 import com.example.prm392.presentation.product_screen.LoadingIndicator
 import com.example.prm392.ui.theme.Vegur
 import com.example.prm392.utils.Result
 import com.example.prm392.utils.formatPrice
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
-import com.google.accompanist.permissions.PermissionStatus
-import com.google.accompanist.permissions.rememberPermissionState
 
 @OptIn(ExperimentalPermissionsApi::class)
 @Composable
@@ -39,10 +37,10 @@ fun PaymentScreen(
     models: List<CartProductsResponseModelData>? = emptyList(),
     navController: NavController,
 ) {
-    val address by viewModel.address.collectAsState()
     val product by viewModel.product.collectAsState()
-    val locationPermissionState =
-        rememberPermissionState(permission = Manifest.permission.ACCESS_FINE_LOCATION)
+    val listOfStoreLocation = viewModel.storeLocations.collectAsState()
+    var selectedLocationId by remember { mutableStateOf<Int?>(null) }
+    var selectedLocationData by remember { mutableStateOf<StoreLocation?>(null) }
 
     LaunchedEffect(Unit) {
         if (model != null) {
@@ -52,13 +50,23 @@ fun PaymentScreen(
         }
     }
 
-    LaunchedEffect(locationPermissionState.status) {
-        when (locationPermissionState.status) {
-            is PermissionStatus.Granted -> viewModel.fetchCurrentLocation()
-            is PermissionStatus.Denied -> {
-                locationPermissionState.launchPermissionRequest()
+    LaunchedEffect(navController) {
+        navController.currentBackStackEntry?.savedStateHandle?.getLiveData<Int>("selectedId")
+            ?.observeForever { id ->
+                viewModel.getAllStoreLocation()
+                selectedLocationId = id
             }
-        }
+    }
+
+    LaunchedEffect(listOfStoreLocation.value) {
+        val result = listOfStoreLocation.value
+        if(result !is Result.Success )
+            return@LaunchedEffect
+        if(result.data.isEmpty())
+            return@LaunchedEffect
+        if(selectedLocationId == null)
+            return@LaunchedEffect
+        selectedLocationData = result.data.first { it.locationID == selectedLocationId }
     }
 
     when (product) {
@@ -127,13 +135,20 @@ fun PaymentScreen(
                         fontWeight = FontWeight.Bold,
                         modifier = Modifier.padding(bottom = 8.dp)
                     )
-                    Text(
-                        text = address.toString(),
-                        fontSize = 16.sp,
-                        fontFamily = Vegur,
-                        fontWeight = FontWeight.Normal,
-                        modifier = Modifier.padding(bottom = 16.dp)
-                    )
+
+                    Button(
+                        onClick = {
+                            navController.navigate(Screen.MapScreen.route)
+                        }
+                    ) {
+                        Text(
+                            text = selectedLocationData?.address ?: "Select Your Location Store",
+                            style = MaterialTheme.typography.titleLarge.copy(
+                                fontFamily = Vegur,
+                                fontWeight = FontWeight.Bold,
+                            )
+                        )
+                    }
 
                     Card(
                         elevation = CardDefaults.cardElevation(),
@@ -213,18 +228,6 @@ fun PaymentScreen(
                     }
                 }
 
-            }
-
-            if (locationPermissionState.status is PermissionStatus.Denied &&
-                (locationPermissionState.status as PermissionStatus.Denied).shouldShowRationale
-            ) {
-                Text(
-                    text = "Location permission is required to display your address.",
-                    color = MaterialTheme.colorScheme.error,
-                    fontFamily = Vegur,
-                    fontWeight = FontWeight.Bold,
-                    modifier = Modifier.padding(8.dp)
-                )
             }
         }
 
