@@ -32,7 +32,7 @@ class GetUserCartService @Inject constructor(
                             price = 16990000.0, // VNĐ
                             imageURL = mockImageUrl,
                             category = Category(
-                                categoryID = "1",
+                                categoryID = 1,
                                 categoryName = "Electronics"
                             )
                         ),
@@ -49,7 +49,7 @@ class GetUserCartService @Inject constructor(
                             price = 27990000.0, // VNĐ
                             imageURL = mockImageUrl,
                             category = Category(
-                                categoryID = "2",
+                                categoryID = 2,
                                 categoryName = "Computers"
                             )
                         ),
@@ -66,7 +66,7 @@ class GetUserCartService @Inject constructor(
                             price = 1999000.0, // VNĐ
                             imageURL = mockImageUrl,
                             category = Category(
-                                categoryID = "3",
+                                categoryID = 3,
                                 categoryName = "Accessories"
                             )
                         ),
@@ -83,7 +83,7 @@ class GetUserCartService @Inject constructor(
                             price = 4990000.0, // VNĐ
                             imageURL = mockImageUrl,
                             category = Category(
-                                categoryID = "4",
+                                categoryID = 4,
                                 categoryName = "Wearables"
                             )
                         ),

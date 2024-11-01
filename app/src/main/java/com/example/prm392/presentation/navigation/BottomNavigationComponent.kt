@@ -1,8 +1,11 @@
+import androidx.compose.foundation.border
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.Chat
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.ShoppingCart
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationBar
@@ -40,7 +43,7 @@ fun BottomNavigationComponent(
 
     NavigationBar(
         modifier = modifier
-            .topBorder(12.dp, color = Color.Gray),
+            .border(1.dp, color = Color.Gray.copy(.4f)),
         containerColor = Color.White,
         contentColor = contentColor,
     ) {

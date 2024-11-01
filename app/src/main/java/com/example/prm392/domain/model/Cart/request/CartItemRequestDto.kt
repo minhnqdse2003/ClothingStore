@@ -11,3 +11,7 @@ data class CartItemRequestDto (
     @Json(name = "quantity")
     val quantity: Int,
 ) : Parcelable
+
+data class CartItemRequestViewModel  (
+    val price : Double
+)

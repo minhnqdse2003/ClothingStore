@@ -4,6 +4,8 @@ import com.example.prm392.data.dto.products.get_all.Category
 import com.example.prm392.data.dto.products.get_all.GetAllProductResponseModel
 import com.example.prm392.data.dto.products.get_all.Product
 import com.example.prm392.data.repository.ClothingProductRepository
+import com.example.prm392.domain.model.ClothingProduct.request.ClothingProductFilterParam
+import com.example.prm392.domain.model.ClothingProduct.request.buildFilterMap
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
@@ -15,8 +17,14 @@ class GetAllClothing @Inject constructor(
 ) {
     suspend operator fun invoke(
         page: Int,
-        pageCount: Int
+        pageCount: Int,
+        clothingProductFilterParam : ClothingProductFilterParam
     ): Flow<GetAllProductResponseModel> = flow {
+//        emit(repository.getAllClothing(
+//            page,
+//            pageCount,
+//            clothingProductFilterParam
+//        ))
         val totalCount = 200
 
         val mockProducts = List(totalCount) { index ->
@@ -29,7 +37,7 @@ class GetAllClothing @Inject constructor(
                 price = 20.0 + index,  // Incremental price for variety
                 imageURL = "https://firebasestorage.googleapis.com/v0/b/exe201-8a7e7.appspot.com/o/still-life-say-no-fast-fashion.jpg?alt=media&token=45e97687-d77f-45ac-a5be-8a99b8a47637",  // Mock image URL
                 category = Category(
-                    categoryID = "CAT${index.toString()}",
+                    categoryID = index,
                     categoryName = "Category ${index.toString()}"  // Mock category
                 )
             )

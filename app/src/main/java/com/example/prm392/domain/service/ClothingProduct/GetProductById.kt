@@ -26,7 +26,7 @@ class GetProductById @Inject constructor(
                 price = 20.0 + index,  // Incremental price for variety
                 imageURL = "https://firebasestorage.googleapis.com/v0/b/exe201-8a7e7.appspot.com/o/still-life-say-no-fast-fashion.jpg?alt=media&token=45e97687-d77f-45ac-a5be-8a99b8a47637",  // Mock image URL
                 category = Category(
-                    categoryID = "CAT${index.toString()}",
+                    categoryID = index,
                     categoryName = "Category ${index.toString()}"  // Mock category
                 )
             )

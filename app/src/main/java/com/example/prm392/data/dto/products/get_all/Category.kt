@@ -7,7 +7,7 @@ import com.squareup.moshi.JsonClass
 @JsonClass(generateAdapter = true)
 data class Category(
     @Json(name = "categoryID")
-    val categoryID: String,
+    val categoryID: Int,
     @Json(name = "categoryName")
     val categoryName: String
 )

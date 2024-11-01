@@ -1,6 +1,7 @@
 package com.example.prm392.presentation.cart_screen
 
 import android.annotation.SuppressLint
+import android.content.ClipData.Item
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
@@ -17,7 +18,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.colorResource
-import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -71,6 +71,47 @@ fun CartScreen(
 
             is Result.Success -> {
                 val cartItems = (cartResponse as Result.Success<CartResponseDto>).data.data
+                if (cartItems.product.isEmpty()) {
+                    Box(
+                        modifier = Modifier
+                            .fillMaxSize(),
+                    ) {
+                        Column(
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .align(Alignment.Center),
+                            horizontalAlignment = Alignment.CenterHorizontally,
+                            verticalArrangement = Arrangement.Center
+                        ) {
+                            Image(
+                                painter = rememberAsyncImagePainter(R.drawable.empty_cart),
+                                contentDescription = null,
+                                modifier = Modifier
+                            )
+                            Text(
+                                text = "Cart is now empty",
+                                style = MaterialTheme.typography.headlineLarge.copy(
+                                    fontWeight = FontWeight.Bold,
+                                    fontFamily = Vegur,
+                                )
+                            )
+                            Button(
+                                onClick = {
+                                    navController.navigate(Screen.HomeScreen.route)
+                                },
+                                colors = ButtonDefaults.buttonColors(
+                                    containerColor = Color.Black
+                                )
+                            ) {
+                                Text(
+                                    text = "Back to home screen"
+                                )
+                            }
+                        }
+                    }
+                    return@Column
+                }
+
                 Text(
                     text = "My Cart (${cartItems.product.size})",
                     style = MaterialTheme.typography.headlineMedium,
@@ -137,6 +178,13 @@ fun CartScreen(
                     Button(
                         onClick = {
                             if (selectedProductIds.size != 0) {
+                                val cartProduct =
+                                    (cartResponse as Result.Success<CartResponseDto>).data.data.product
+                                        .filter { selectedProductIds.contains(it.product.productID) }
+                                navController.currentBackStackEntry?.savedStateHandle?.set(
+                                    key = "Buy Cart",
+                                    value = cartProduct
+                                )
                                 navController.navigate(Screen.ProductPaymentScreen.route)
                             }
                         },
@@ -164,7 +212,6 @@ fun CartScreen(
         }
     }
 }
-
 
 
 @Composable
@@ -298,6 +345,17 @@ fun CartItem(
                         }
                     }
                 }
+            }
+
+            IconButton(
+                onClick = onRemove,
+                modifier = Modifier.padding(start = 8.dp)
+            ) {
+                Icon(
+                    imageVector = Icons.Default.Remove,
+                    contentDescription = "Remove from Cart",
+                    tint = Color.Red
+                )
             }
         }
     }

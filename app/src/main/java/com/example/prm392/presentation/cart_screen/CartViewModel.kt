@@ -1,13 +1,11 @@
 package com.example.prm392.presentation.cart_screen
 
-import androidx.compose.runtime.collectAsState
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.prm392.data.dto.cart.toAddCartResponseDto
 import com.example.prm392.data.dto.cart.toCartResponseDto
 import com.example.prm392.data.dto.cart.toRemoveCartResponseDto
 import com.example.prm392.data.dto.cart.toUpdateUserCartItemQuantityResponseDto
-import com.example.prm392.data.dto.products.get_all.Product
 import com.example.prm392.domain.model.Cart.request.CartItemRequestDto
 import com.example.prm392.domain.model.Cart.response.AddCartResponseDto
 import com.example.prm392.domain.model.Cart.response.CartResponseDto
@@ -76,10 +74,36 @@ class CartViewModel @Inject constructor(
     }
 
     fun removeUserCart(cartItemId: Int) = viewModelScope.launch {
+        val responseData = _getUserCartResponse.value
+        if(responseData is Result.Success){
+            val updatedProductList = responseData.data.data.product.filterNot { it.product.productID == cartItemId }
+
+            _getUserCartResponse.value = Result.Success(
+                responseData.data.copy(
+                    data = responseData.data.data.copy(
+                        product = updatedProductList
+                    )
+                )
+            )
+        }
+
         cartService.removeUserCartService(cartItemId)
             .onStart { _removeUserCartResponse.value = Result.Loading }
             .catch { _removeUserCartResponse.value = Result.Error(it) }
-            .collect {
+            .collect { it ->
+                val currentCartResponse = _getUserCartResponse.value
+                if(currentCartResponse is Result.Success){
+                    val updatedProductList = currentCartResponse.data.data.product.filterNot { it.product.productID == cartItemId }
+
+                    _getUserCartResponse.value = Result.Success(
+                        currentCartResponse.data.copy(
+                            data = currentCartResponse.data.data.copy(
+                                product = updatedProductList
+                            )
+                        )
+                    )
+                }
+
                 _removeUserCartResponse.value = Result.Success(it.toRemoveCartResponseDto())
             }
     }
@@ -119,7 +143,6 @@ class CartViewModel @Inject constructor(
                         }
                     }
 
-                    // Update the state with the new cart items list
                     _getUserCartResponse.value = Result.Success(
                         currentResponse.data.copy(
                             data = currentResponse.data.data.copy(product = updatedCartItems)

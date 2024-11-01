@@ -17,6 +17,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
+import com.example.prm392.data.dto.cart.CartProductsResponseModelData
 import com.example.prm392.domain.model.Cart.request.CartItemRequestDto
 import com.example.prm392.presentation.SearchScreen
 import com.example.prm392.presentation.detail_screen.DetailScreen
@@ -158,7 +159,8 @@ fun AppNavigation(
                 exit = fadeOut() + slideOutHorizontally(targetOffsetX = { it })
             ) {
                 val model:CartItemRequestDto? = navController.previousBackStackEntry?.savedStateHandle?.get<CartItemRequestDto>("Buy")
-                PaymentScreen(model = model, navController = navController)
+                val models = navController.previousBackStackEntry?.savedStateHandle?.get<List<CartProductsResponseModelData>>("Buy Cart")
+                PaymentScreen(model = model, navController = navController, models = models)
             }
         }
     }

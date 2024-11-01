@@ -11,9 +11,11 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.prm392.data.dto.cart.CartProductsResponseModelData
 import com.example.prm392.data.dto.products.get_all.Product
 import com.example.prm392.data.dto.products.get_by_id.toGetProductByIdResponseDto
 import com.example.prm392.domain.model.Cart.request.CartItemRequestDto
+import com.example.prm392.domain.model.Cart.request.CartItemRequestViewModel
 import com.example.prm392.domain.model.Order.OrderRequestDto
 import com.example.prm392.domain.service.ClothingProduct.ClothingProductService
 import com.example.prm392.utils.Result
@@ -41,14 +43,14 @@ class PaymentViewModel @Inject constructor(
     private val _address = MutableStateFlow<String?>("Fetching address...")
     val address = _address.asStateFlow()
 
-    private val _product = MutableStateFlow<Result<Product>>(Result.Idle)
+    private val _product = MutableStateFlow<Result<CartItemRequestViewModel>>(Result.Idle)
     val product = _product.asStateFlow()
 
     private val _selectedLocation = mutableStateOf<Int>(1)
 
     private val cartItems = mutableListOf<CartItemRequestDto>()
 
-    fun getCurrentProduct(id : Int){
+    fun getCurrentProduct(id: Int) {
         viewModelScope.launch {
             service.getProductById(id)
                 .onStart {
@@ -58,8 +60,13 @@ class PaymentViewModel @Inject constructor(
                     _product.value = Result.Error(exception)
                 }
                 .collect { product ->
-                    val responseData = Result.Success<Product>(product.toGetProductByIdResponseDto().data)
-                    _product.value = responseData
+                    val responseData =
+                        Result.Success<Product>(product.toGetProductByIdResponseDto().data)
+                    _product.value = Result.Success<CartItemRequestViewModel>(
+                        CartItemRequestViewModel(
+                            price = responseData.data.price
+                        )
+                    )
 
                     cartItems.add(
                         CartItemRequestDto(
@@ -130,6 +137,24 @@ class PaymentViewModel @Inject constructor(
                     context,
                     Manifest.permission.ACCESS_COARSE_LOCATION
                 ) == PackageManager.PERMISSION_GRANTED
+    }
+
+    fun setDataFromCart(models: List<CartProductsResponseModelData>) {
+        var price:Double = 0.0
+        for(product in models){
+            price += product.product.price * product.quantity
+            cartItems.add(
+                CartItemRequestDto(
+                    quantity = product.quantity,
+                    productID = product.product.productID
+                )
+            )
+        }
+        _product.value = Result.Success<CartItemRequestViewModel>(
+            CartItemRequestViewModel(
+                price = price
+            )
+        )
     }
 
 }

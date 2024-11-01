@@ -1,14 +1,21 @@
 package com.example.prm392.presentation.home_screen
 
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.lazy.grid.rememberLazyGridState
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.material.icons.outlined.ArrowUpward
+import androidx.compose.material.icons.outlined.Search
 import androidx.compose.material3.*
 import androidx.compose.material3.pulltorefresh.PullToRefreshContainer
 import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
@@ -18,6 +25,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -31,6 +41,9 @@ import com.example.prm392.presentation.detail_screen.components.LoadingScreen
 import com.example.prm392.presentation.home_screen.components.CategoryCarousel
 import com.example.prm392.presentation.home_screen.components.HorizontalCarousel
 import com.example.prm392.presentation.home_screen.components.ProductItem
+import com.example.prm392.presentation.product_screen.LoadingIndicator
+import com.example.prm392.ui.theme.Vegur
+import com.example.prm392.utils.MySpacer
 import com.example.prm392.utils.Result
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -40,11 +53,18 @@ fun HomeScreen(
     paddingValues: PaddingValues,
     navController: NavHostController
 ) {
-    val clothingProducts by viewModel.clothingProducts.collectAsState()
+    val clothingProducts by viewModel.filteredClothingProducts.collectAsState()
     val categories by viewModel.categories.collectAsState()
     val hasMoreData by viewModel.hasMoreData.collectAsState()
     val isLoading by viewModel.isLoading.collectAsStateWithLifecycle()
     var isScrollToTopTrigger by remember { mutableStateOf(false) }
+    var searchInput by remember { mutableStateOf("") }
+    val selectedCategoryId by viewModel.selectedCategoryId
+    val focusManager = LocalFocusManager.current
+
+    val onSelectedCategory = { category: Category ->
+        viewModel.onCategorySelected(category)
+    }
 
     val banners = listOf(
         R.drawable.banner_1,
@@ -81,6 +101,7 @@ fun HomeScreen(
             viewModel.refreshClothing {
                 pullToRefreshState.endRefresh()
             }
+            searchInput = ""
         }
     }
 
@@ -94,12 +115,11 @@ fun HomeScreen(
                 .windowInsetsPadding(WindowInsets.statusBars)
                 .nestedScroll(pullToRefreshState.nestedScrollConnection)
         ) {
-
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(50.dp)
-                    .padding(horizontal = 16.dp)
+                    .padding(horizontal = 16.dp, vertical = 8.dp)
                     .aspectRatio(1f),
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
@@ -111,6 +131,62 @@ fun HomeScreen(
                         .size(60.dp),
                     contentScale = ContentScale.Crop
                 )
+
+                TextField(
+                    value = searchInput,
+                    onValueChange = { newValue ->
+                        searchInput = newValue
+                    },
+                    leadingIcon = {
+                        Icon(
+                            imageVector = Icons.Outlined.Search,
+                            contentDescription = null,
+                            tint = Color.Gray.copy(0.5f)
+                        )
+                    },
+                    placeholder = {
+                        Text(
+                            text = "Search products",
+                            style = MaterialTheme.typography.titleSmall.copy(
+                                fontWeight = FontWeight.Normal,
+                                fontFamily = Vegur
+                            )
+                        )
+                    },
+                    modifier = Modifier
+                        .background(
+                            color = Color.White,
+                            shape = RoundedCornerShape(16.dp)
+                        )
+                        .fillMaxWidth(.8f)
+                        .border(
+                            BorderStroke(1.dp, Color.Gray.copy(0.3f)),
+                            shape = RoundedCornerShape(16.dp)
+                        ),
+                    shape = RoundedCornerShape(16.dp),
+                    colors = TextFieldDefaults.colors(
+                        unfocusedContainerColor = Color.Transparent,
+                        focusedContainerColor = Color.Transparent,
+                        disabledContainerColor = Color.Transparent,
+                        errorContainerColor = Color.Transparent,
+                        unfocusedIndicatorColor = Color.Transparent,
+                        focusedIndicatorColor = Color.Transparent,
+                        disabledIndicatorColor = Color.Transparent,
+                        errorIndicatorColor = Color.Transparent
+                    ),
+                    singleLine = true,
+                    keyboardOptions = KeyboardOptions.Default.copy(
+                        imeAction = ImeAction.Done
+                    ),
+                    keyboardActions = KeyboardActions(
+                        onDone = {
+                            focusManager.clearFocus()
+                            viewModel.onSearchCompleted(searchInput)
+                        }
+                    )
+                )
+
+
                 Icon(
                     modifier = Modifier
                         .size(24.dp),
@@ -118,6 +194,8 @@ fun HomeScreen(
                     contentDescription = null
                 )
             }
+
+            MySpacer(16.dp)
 
             HorizontalCarousel(
                 banners = banners,
@@ -127,13 +205,17 @@ fun HomeScreen(
             when (categories) {
                 is Result.Success -> {
                     CategoryCarousel(
+                        selectedCategoryId = selectedCategoryId,
+                        onSelectedCategory = onSelectedCategory,
                         categories = (categories as Result.Success<List<Category>>).data,
-                        navController = rememberNavController()
                     )
                 }
 
                 else -> Unit
             }
+
+            if(isLoading)
+                LoadingScreen()
 
             when (clothingProducts) {
                 is Result.Loading -> {
@@ -150,7 +232,7 @@ fun HomeScreen(
                             .fillMaxSize()
                     ) {
                         items(products) { product ->
-                            ProductItem(product){
+                            ProductItem(product) {
                                 navController.navigate("product_detail/${product.productID}")
                             }
                         }

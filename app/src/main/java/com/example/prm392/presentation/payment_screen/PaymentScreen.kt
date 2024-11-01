@@ -6,7 +6,6 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.filled.Payment
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -21,11 +20,13 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import coil3.compose.rememberAsyncImagePainter
 import com.example.prm392.R
-import com.example.prm392.data.dto.cart.CartResponseModel
-import com.example.prm392.data.dto.products.get_all.Product
+import com.example.prm392.data.dto.cart.CartProductsResponseModelData
 import com.example.prm392.domain.model.Cart.request.CartItemRequestDto
+import com.example.prm392.domain.model.Cart.request.CartItemRequestViewModel
 import com.example.prm392.presentation.product_screen.LoadingIndicator
+import com.example.prm392.ui.theme.Vegur
 import com.example.prm392.utils.Result
+import com.example.prm392.utils.formatPrice
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.PermissionStatus
 import com.google.accompanist.permissions.rememberPermissionState
@@ -35,9 +36,8 @@ import com.google.accompanist.permissions.rememberPermissionState
 fun PaymentScreen(
     viewModel: PaymentViewModel = hiltViewModel(),
     model: CartItemRequestDto?,
-    models: List<CartResponseModel>? = emptyList(),
+    models: List<CartProductsResponseModelData>? = emptyList(),
     navController: NavController,
-    isSingleProduct:Boolean? = true
 ) {
     val address by viewModel.address.collectAsState()
     val product by viewModel.product.collectAsState()
@@ -47,6 +47,8 @@ fun PaymentScreen(
     LaunchedEffect(Unit) {
         if (model != null) {
             viewModel.getCurrentProduct(model.productID)
+        } else if (models != null) {
+            viewModel.setDataFromCart(models)
         }
     }
 
@@ -103,8 +105,8 @@ fun PaymentScreen(
                         Text(
                             text = "Payment",
                             style = MaterialTheme.typography.titleLarge.copy(
-                                fontFamily = FontFamily.SansSerif,
-                                fontWeight = FontWeight.Bold
+                                fontFamily = Vegur,
+                                fontWeight = FontWeight.Bold,
                             )
                         )
 
@@ -121,12 +123,15 @@ fun PaymentScreen(
                     Text(
                         text = "Shipping Address",
                         fontSize = 18.sp,
+                        fontFamily = Vegur,
                         fontWeight = FontWeight.Bold,
                         modifier = Modifier.padding(bottom = 8.dp)
                     )
                     Text(
                         text = address.toString(),
                         fontSize = 16.sp,
+                        fontFamily = Vegur,
+                        fontWeight = FontWeight.Normal,
                         modifier = Modifier.padding(bottom = 16.dp)
                     )
 
@@ -174,12 +179,14 @@ fun PaymentScreen(
                         Text(
                             text = "Total",
                             fontSize = 18.sp,
+                            fontFamily = Vegur,
                             fontWeight = FontWeight.Bold,
                             modifier = Modifier.padding(top = 16.dp)
                         )
                         Text(
-                            text = "${(product as Result.Success<Product>).data.price.toString()} VNĐ",
+                            text = "${formatPrice((product as Result.Success<CartItemRequestViewModel>).data.price)} VNĐ",
                             fontSize = 18.sp,
+                            fontFamily = Vegur,
                             fontWeight = FontWeight.Bold,
                             color = Color.Red,
                             modifier = Modifier.padding(top = 16.dp)
@@ -199,6 +206,8 @@ fun PaymentScreen(
                         Text(
                             text = "Place your order",
                             fontSize = 18.sp,
+                            fontFamily = Vegur,
+                            fontWeight = FontWeight.Bold,
                             color = Color.White
                         )
                     }
@@ -212,6 +221,8 @@ fun PaymentScreen(
                 Text(
                     text = "Location permission is required to display your address.",
                     color = MaterialTheme.colorScheme.error,
+                    fontFamily = Vegur,
+                    fontWeight = FontWeight.Bold,
                     modifier = Modifier.padding(8.dp)
                 )
             }
