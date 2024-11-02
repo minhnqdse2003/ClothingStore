@@ -25,12 +25,14 @@ import androidx.compose.ui.geometry.CornerRadius
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.example.prm392.data.dto.products.get_all.Product
 import coil3.compose.AsyncImage
+import com.example.prm392.R
 import com.example.prm392.ui.theme.Vegur
 
 @Composable
@@ -74,7 +76,7 @@ fun ProductItem(product: Product, onClick: () -> Unit) {
                 fontWeight = FontWeight.Bold,
                 fontFamily = Vegur
             ),
-            color = Color.Red,
+            color = colorResource(R.color.dark_green),
             modifier = Modifier.padding(bottom = 4.dp)
         )
     }

@@ -5,6 +5,7 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.automirrored.filled.ArrowForwardIos
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -12,6 +13,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -25,11 +27,11 @@ import com.example.prm392.domain.model.Cart.request.CartItemRequestViewModel
 import com.example.prm392.presentation.navigation.Screen
 import com.example.prm392.presentation.product_screen.LoadingIndicator
 import com.example.prm392.ui.theme.Vegur
+import com.example.prm392.utils.MySpacer
 import com.example.prm392.utils.Result
 import com.example.prm392.utils.formatPrice
-import com.google.accompanist.permissions.ExperimentalPermissionsApi
+import okhttp3.internal.notifyAll
 
-@OptIn(ExperimentalPermissionsApi::class)
 @Composable
 fun PaymentScreen(
     viewModel: PaymentViewModel = hiltViewModel(),
@@ -38,6 +40,7 @@ fun PaymentScreen(
     navController: NavController,
 ) {
     val product by viewModel.product.collectAsState()
+    val address by viewModel.address.collectAsState()
     val listOfStoreLocation = viewModel.storeLocations.collectAsState()
     var selectedLocationId by remember { mutableStateOf<Int?>(null) }
     var selectedLocationData by remember { mutableStateOf<StoreLocation?>(null) }
@@ -53,18 +56,18 @@ fun PaymentScreen(
     LaunchedEffect(navController) {
         navController.currentBackStackEntry?.savedStateHandle?.getLiveData<Int>("selectedId")
             ?.observeForever { id ->
-                viewModel.getAllStoreLocation()
+                viewModel.fetchCurrentLocation()
                 selectedLocationId = id
             }
     }
 
     LaunchedEffect(listOfStoreLocation.value) {
         val result = listOfStoreLocation.value
-        if(result !is Result.Success )
+        if (result !is Result.Success)
             return@LaunchedEffect
-        if(result.data.isEmpty())
+        if (result.data.isEmpty())
             return@LaunchedEffect
-        if(selectedLocationId == null)
+        if (selectedLocationId == null)
             return@LaunchedEffect
         selectedLocationData = result.data.first { it.locationID == selectedLocationId }
     }
@@ -102,7 +105,7 @@ fun PaymentScreen(
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         IconButton(
-                            onClick = { navController.popBackStack() }
+                            onClick = { navController.navigateUp() }
                         ) {
                             Icon(
                                 imageVector = Icons.AutoMirrored.Filled.ArrowBack,
@@ -136,19 +139,92 @@ fun PaymentScreen(
                         modifier = Modifier.padding(bottom = 8.dp)
                     )
 
-                    Button(
+                    Card(
+                        elevation = CardDefaults.cardElevation(),
+                        modifier = Modifier
+                            .wrapContentSize(),
+                        border = BorderStroke(.5.dp, Color.Gray),
+                        colors = CardDefaults.cardColors(
+                            containerColor = Color.White
+                        ),
                         onClick = {
                             navController.navigate(Screen.MapScreen.route)
                         }
                     ) {
-                        Text(
-                            text = selectedLocationData?.address ?: "Select Your Location Store",
-                            style = MaterialTheme.typography.titleLarge.copy(
-                                fontFamily = Vegur,
-                                fontWeight = FontWeight.Bold,
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(horizontal = 16.dp, vertical = 24.dp),
+                            horizontalArrangement = Arrangement.SpaceBetween,
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Icon(
+                                imageVector = MapIcon,
+                                contentDescription = null
                             )
-                        )
+
+                            Column(
+                                modifier = Modifier
+                                    .wrapContentSize()
+                            ) {
+                                Text(
+                                    text = "Store Location",
+                                    style = MaterialTheme.typography.labelLarge.copy(
+                                        fontFamily = Vegur,
+                                        fontWeight = FontWeight.SemiBold
+                                    )
+                                )
+                                Text(
+                                    text = selectedLocationData?.address
+                                        ?: "Select Store Location",
+                                    style = MaterialTheme.typography.labelSmall.copy(
+                                        fontFamily = Vegur,
+                                        fontWeight = FontWeight.Thin,
+                                    ),
+                                    overflow = TextOverflow.Ellipsis,
+                                    maxLines = 1,
+                                    modifier = Modifier
+                                        .fillMaxWidth(.8f)
+                                )
+                                if (selectedLocationData != null) {
+                                    MySpacer(8.dp)
+                                    Text(
+                                        text = "Your Location",
+                                        style = MaterialTheme.typography.labelLarge.copy(
+                                            fontFamily = Vegur,
+                                            fontWeight = FontWeight.SemiBold
+                                        )
+                                    )
+                                    Text(
+                                        text = address
+                                            ?: "Your Location",
+                                        style = MaterialTheme.typography.labelSmall.copy(
+                                            fontFamily = Vegur,
+                                            fontWeight = FontWeight.Thin,
+                                        ),
+                                        overflow = TextOverflow.Ellipsis,
+                                        maxLines = 1,
+                                        modifier = Modifier
+                                            .fillMaxWidth(.8f)
+                                    )
+                                }
+                            }
+                            Icon(
+                                imageVector = Icons.AutoMirrored.Filled.ArrowForwardIos,
+                                contentDescription = null
+                            )
+                        }
                     }
+
+                    MySpacer(16.dp)
+
+                    Text(
+                        text = "Payment methods",
+                        fontSize = 18.sp,
+                        fontFamily = Vegur,
+                        fontWeight = FontWeight.Bold,
+                        modifier = Modifier.padding(bottom = 8.dp)
+                    )
 
                     Card(
                         elevation = CardDefaults.cardElevation(),

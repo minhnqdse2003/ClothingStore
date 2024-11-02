@@ -1,6 +1,5 @@
 package com.example.prm392.presentation.map_screen.components
 
-import android.util.Log
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
@@ -17,7 +16,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -33,7 +31,8 @@ import com.google.android.gms.maps.model.LatLng
 fun LocationSelector(
     locations: List<StoreLocation>,
     currentLocation: LatLng,
-    onLocationSelected: (Int) -> Unit
+    onLocationSelected: (Int) -> Unit,
+    onChangeCameraPosition: (LatLng) -> Unit
 ) {
     var selectedLocation = remember { mutableStateOf<Int?>(null) }
 
@@ -47,6 +46,12 @@ fun LocationSelector(
                 modifier = Modifier
                     .fillMaxWidth()
                     .clickable {
+                        onChangeCameraPosition(
+                            LatLng(
+                                location.latitude,
+                                location.longitude
+                            )
+                        )
                         selectedLocation.value = location.locationID
                     }
                     .padding(vertical = 8.dp, horizontal = 16.dp),
@@ -72,10 +77,12 @@ fun LocationSelector(
                 )
 
                 Text(
-                    text = "${formatKmDistance(
-                        currentLocation,
-                        LatLng(location.latitude, location.longitude)
-                    )} km",
+                    text = "${
+                        formatKmDistance(
+                            currentLocation,
+                            LatLng(location.latitude, location.longitude)
+                        )
+                    } km",
                     modifier = Modifier.weight(1f),
                     maxLines = 1
                 )
