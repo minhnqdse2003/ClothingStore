@@ -13,8 +13,12 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
+import coil3.compose.AsyncImage
+import coil3.request.ImageRequest
+import coil3.size.Size
 
 @Composable
 fun HorizontalCarousel(
@@ -46,11 +50,14 @@ fun BannerCard(
         ),
         border = BorderStroke(.1.dp, Color.Gray)
     ) {
-        Image(
-            painter = painterResource(id = bannerImageRes), // Load banner image
-            contentDescription = "Banner Image", // Content description
-            contentScale = ContentScale.Crop, // Scale the image to fill
-            modifier = Modifier.fillMaxSize() // Fill the card
+        AsyncImage(
+            model = ImageRequest.Builder(LocalContext.current)
+                .data(bannerImageRes)
+                .size(Size(300, 180))
+                .build(),
+            contentDescription = "Banner Image",
+            contentScale = ContentScale.Crop,
+            modifier = Modifier.fillMaxSize()
         )
     }
 }

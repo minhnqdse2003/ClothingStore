@@ -38,18 +38,6 @@ fun LoginComponent(
     // Focus requesters for fields
     val usernameFocusRequester = remember { FocusRequester() }
     val passwordFocusRequester = remember { FocusRequester() }
-    val focusManager = LocalFocusManager.current
-
-    val lifecycleOwner = LocalLifecycleOwner.current
-    DisposableEffect(lifecycleOwner) {
-        val observer = LifecycleEventObserver { _, event ->
-            if (event == Lifecycle.Event.ON_RESUME) {
-                usernameFocusRequester.requestFocus()
-            }
-        }
-        lifecycleOwner.lifecycle.addObserver(observer)
-        onDispose { lifecycleOwner.lifecycle.removeObserver(observer) }
-    }
 
     Column(
         modifier = Modifier
@@ -78,7 +66,7 @@ fun LoginComponent(
             shape = MaterialTheme.shapes.extraLarge,
             keyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.Next),
             keyboardActions = KeyboardActions(
-                onNext = { passwordFocusRequester.requestFocus() }  // Move to password field on "Next"
+                onNext = { passwordFocusRequester.requestFocus() }
             ),
             modifier = Modifier
                 .focusRequester(usernameFocusRequester)
@@ -106,9 +94,6 @@ fun LoginComponent(
             shape = MaterialTheme.shapes.extraLarge,
             visualTransformation = PasswordVisualTransformation(),
             keyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.Done),
-            keyboardActions = KeyboardActions(
-                onDone = { focusManager.clearFocus() } // Dismiss keyboard on "Done"
-            ),
             modifier = Modifier
                 .focusRequester(passwordFocusRequester)
                 .fillMaxWidth()
@@ -117,7 +102,6 @@ fun LoginComponent(
 
         Button(
             onClick = {
-                focusManager.clearFocus()  // Clear focus to hide keyboard
                 viewModel.onClickButtonLogin(
                     LoginRequestModel(
                         username = username,

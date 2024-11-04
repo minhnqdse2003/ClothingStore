@@ -6,6 +6,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.GridItemSpan
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.lazy.grid.rememberLazyGridState
@@ -32,7 +33,6 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
-import androidx.navigation.compose.rememberNavController
 import coil3.compose.rememberAsyncImagePainter
 import com.example.prm392.R
 import com.example.prm392.data.dto.category.get_all.Category
@@ -41,7 +41,6 @@ import com.example.prm392.presentation.detail_screen.components.LoadingScreen
 import com.example.prm392.presentation.home_screen.components.CategoryCarousel
 import com.example.prm392.presentation.home_screen.components.HorizontalCarousel
 import com.example.prm392.presentation.home_screen.components.ProductItem
-import com.example.prm392.presentation.product_screen.LoadingIndicator
 import com.example.prm392.ui.theme.Vegur
 import com.example.prm392.utils.MySpacer
 import com.example.prm392.utils.Result
@@ -197,24 +196,7 @@ fun HomeScreen(
 
             MySpacer(16.dp)
 
-            HorizontalCarousel(
-                banners = banners,
-                onBannerClick = {}
-            )
-
-            when (categories) {
-                is Result.Success -> {
-                    CategoryCarousel(
-                        selectedCategoryId = selectedCategoryId,
-                        onSelectedCategory = onSelectedCategory,
-                        categories = (categories as Result.Success<List<Category>>).data,
-                    )
-                }
-
-                else -> Unit
-            }
-
-            if(isLoading)
+            if (isLoading)
                 LoadingScreen()
 
             when (clothingProducts) {
@@ -225,18 +207,60 @@ fun HomeScreen(
                 is Result.Success -> {
                     val products = (clothingProducts as Result.Success<List<Product>>).data
 
-                    LazyVerticalGrid(
-                        state = gridState,
-                        columns = GridCells.Fixed(2),
+                    Box(
                         modifier = Modifier
                             .fillMaxSize()
+                            .background(MaterialTheme.colorScheme.primary.copy(.1f))
                     ) {
-                        items(products) { product ->
-                            ProductItem(product) {
-                                navController.navigate("product_detail/${product.productID}")
+                        LazyVerticalGrid(
+                            state = gridState,
+                            columns = GridCells.Fixed(2),
+                            modifier = Modifier
+                                .fillMaxSize(),
+                        ) {
+                            item(span = { GridItemSpan(2) }) {
+                                Box(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .background(Color.White)
+                                ) {
+                                    HorizontalCarousel(
+                                        banners = banners,
+                                        onBannerClick = {}
+                                    )
+                                    MySpacer(16.dp)
+                                }
+                            }
+
+                            item(span = { GridItemSpan(2) }) {
+                                when (categories) {
+                                    is Result.Success -> {
+                                        Box(
+                                            modifier = Modifier
+                                                .fillMaxWidth()
+                                                .background(Color.White)
+                                        ) {
+                                            CategoryCarousel(
+                                                selectedCategoryId = selectedCategoryId,
+                                                onSelectedCategory = onSelectedCategory,
+                                                categories = (categories as Result.Success<List<Category>>).data,
+                                            )
+                                            MySpacer(16.dp)
+                                        }
+                                    }
+
+                                    else -> Unit
+                                }
+                            }
+
+                            items(products) { product ->
+                                ProductItem(product) {
+                                    navController.navigate("product_detail/${product.productID}")
+                                }
                             }
                         }
                     }
+
                 }
 
                 is Result.Error -> {
