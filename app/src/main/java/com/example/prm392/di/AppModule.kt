@@ -2,15 +2,21 @@ package com.example.prm392.di
 
 import android.content.Context
 import com.example.prm392.data.IClothingProductApi
+import com.example.prm392.data.IMessageApi
 import com.example.prm392.data.IProductApi
 import com.example.prm392.data.IUserApi
 import com.example.prm392.data.repository.ClothingProductRepository
+import com.example.prm392.data.repository.MessageRepository
 import com.example.prm392.data.repository.ProductRepository
 import com.example.prm392.data.repository.UserRepository
+import com.example.prm392.domain.repository.IMessageRepository
 import com.example.prm392.domain.service.ClothingProduct.ClothingProductService
 import com.example.prm392.domain.service.ClothingProduct.GetAllClothing
 import com.example.prm392.domain.service.GetProductDataService
 import com.example.prm392.domain.service.GetSearchProductDataService
+import com.example.prm392.domain.service.MessageService.GetMessageById
+import com.example.prm392.domain.service.MessageService.MessageService
+import com.example.prm392.domain.service.MessageService.SendMessage
 import com.example.prm392.domain.service.Services
 import com.example.prm392.domain.service.User.GetAuthUserService
 import com.example.prm392.domain.service.User.LoginService
@@ -32,7 +38,6 @@ import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
 import retrofit2.converter.moshi.MoshiConverterFactory
 import java.util.concurrent.TimeUnit
-import javax.annotation.Signed
 import javax.inject.Singleton
 
 @Module
@@ -76,6 +81,17 @@ object AppModule {
 
     @Provides
     @Singleton
+    fun provideMessageRetrofit(moshi: Moshi, okHttpClient: OkHttpClient): Retrofit {
+        return Retrofit.Builder()
+            .baseUrl(Constants.BASE_URL_2)
+            .client(okHttpClient)
+            .addConverterFactory(MoshiConverterFactory.create(moshi))
+            .build()
+    }
+
+
+    @Provides
+    @Singleton
     fun provideHeaderProcessing(tokenSlice: TokenSlice): HeaderProcessing {
         return HeaderProcessing(tokenSlice)
     }
@@ -102,14 +118,14 @@ object AppModule {
     @Singleton
     fun provideNavigation() : Navigator = Navigator()
 
-    @Provides
-    @Singleton
-    fun provideServices(repository: ProductRepository): Services {
-        return Services(
-            getProductDataService = GetProductDataService(repository),
-            getSearchProductDataService = GetSearchProductDataService(repository)
-        )
-    }
+//    @Provides
+//    @Singleton
+//    fun provideServices(repository: ProductRepository): Services {
+//        return Services(
+//            getProductDataService = GetProductDataService(repository),
+//            getSearchProductDataService = GetSearchProductDataService(repository)
+//        )
+//    }
 
     @Provides
     @Singleton
@@ -152,4 +168,42 @@ object AppModule {
            getAllClothing = GetAllClothing(repository)
         )
     }
+    @Provides
+    @Singleton
+    fun provideMessageApi(messageRetrofit: Retrofit): IMessageApi {
+        return messageRetrofit.create(IMessageApi::class.java)
+    }
+
+    @Provides
+    @Singleton
+    fun provideMessageRepository(api: IMessageApi, headerProcessing: HeaderProcessing): MessageRepository {
+        return MessageRepository(api, headerProcessing)
+    }
+
+    @Provides
+    @Singleton
+    fun provideMessageService(repository: MessageRepository): MessageService {
+        return MessageService(
+            getMessageById = GetMessageById(repository),
+            sendMessage = SendMessage(repository),
+        )
+    }
+
+//    @Provides
+//    @Singleton
+//    fun provideSignalRService(): SignalRService {
+//        return SignalRService()
+//    }
+//
+//    @Provides
+//    @Singleton
+//    fun provideSendMessageUseCase(signalRService: SignalRService?): SendMessageUseCase {
+//        return SendMessageUseCase(signalRService)
+//    }
+//
+//    @Provides
+//    @Singleton
+//    fun provideReceiveMessageUseCase(signalRService: SignalRService?): ReceiveMessageUseCase {
+//        return ReceiveMessageUseCase(signalRService)
+//    }
 }

@@ -23,6 +23,7 @@ import com.example.prm392.presentation.home_screen.HomeScreen
 import com.example.prm392.presentation.login_screen.LoginScreen
 import com.example.prm392.presentation.chat_screen.ChatScreen
 import com.example.prm392.presentation.cart_screen.CartScreen
+import com.example.prm392.presentation.notification_screen.NotificationScreen
 import com.example.prm392.presentation.profile_screen.ProfileScreen
 import com.example.prm392.utils.TokenSlice
 
@@ -46,7 +47,8 @@ fun AppNavigation(
             navController.navigate(Screen.HomeScreen.route) {
                 popUpTo(Screen.LoginScreen.route) { inclusive = true }
             }
-        } else if (navController.currentDestination?.route != destination.value.route) {
+        } else
+            if (navController.currentDestination?.route != destination.value.route) {
             navController.navigate(destination.value.route) {
                 launchSingleTop = true
             }
@@ -78,6 +80,13 @@ fun AppNavigation(
             navBackStackEntry.arguments?.getString("title")?.let { title ->
                 DetailScreen(title)
             }
+        }
+        composable(
+            route = Screen.NotificationScreen.route,
+            enterTransition = { slideInHorizontally(initialOffsetX = { it }) + fadeIn() },
+            exitTransition = { slideOutHorizontally(targetOffsetX = { it }) + fadeOut() }
+        ) { navBackStackEntry ->
+                NotificationScreen()
         }
 
         // Home screen with Bottom Navigation

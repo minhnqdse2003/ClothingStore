@@ -62,6 +62,7 @@ dependencies {
     implementation(libs.androidx.ui.graphics)
     implementation(libs.androidx.ui.tooling.preview)
     implementation(libs.androidx.material3)
+    implementation(libs.androidx.tools.core)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
@@ -82,7 +83,7 @@ dependencies {
     implementation("androidx.navigation:navigation-compose:2.8.3")
     //Hilt
     implementation("com.google.dagger:hilt-android:2.52")
-    kapt ("com.google.dagger:hilt-compiler:2.52")
+    kapt("com.google.dagger:hilt-compiler:2.52")
     //Coil
     implementation("io.coil-kt.coil3:coil-compose:3.0.0-rc01")
     implementation("io.coil-kt.coil3:coil-network-okhttp:3.0.0-rc01")
@@ -94,4 +95,6 @@ dependencies {
     implementation("androidx.datastore:datastore-preferences:1.0.0")
     //swipe to refresh
     implementation("com.google.accompanist:accompanist-swiperefresh:0.36.0")
+    //signalr
+    implementation ("com.microsoft.signalr:signalr:5.0.11")
 }
