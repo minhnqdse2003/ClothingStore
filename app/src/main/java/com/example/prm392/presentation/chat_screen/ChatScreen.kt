@@ -23,7 +23,7 @@ import com.example.prm392.utils.Result
 @Composable
 fun ChatScreen(viewModel: ChatViewModel = hiltViewModel(),  modifier: Modifier = Modifier ) {
     LaunchedEffect(true) {
-        viewModel.fetchMessages(pageSize = 10, pageNumber = 1)
+        viewModel.fetchMessages(pageSize = 100, pageNumber = 1)
 
     }
     val mockMessages = remember {

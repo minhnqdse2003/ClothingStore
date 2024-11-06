@@ -14,12 +14,11 @@ class GetNotify @Inject constructor(
 ) {
     suspend operator fun invoke(
         userId : Int
-    ): Flow<GetNotifyResponseModel> = flow {
+    ): Flow<List<GetNotifyResponseModel>> = flow {
         try {
             val response = repository.getNotifyById(userId)
             Log.d("Notify", "Mapped Notify: $response")
             emit(response)
-
         } catch (e: Exception) {
             throw e
         }

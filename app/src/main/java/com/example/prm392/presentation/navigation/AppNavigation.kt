@@ -23,6 +23,7 @@ import com.example.prm392.presentation.home_screen.HomeScreen
 import com.example.prm392.presentation.login_screen.LoginScreen
 import com.example.prm392.presentation.chat_screen.ChatScreen
 import com.example.prm392.presentation.cart_screen.CartScreen
+import com.example.prm392.presentation.chat_screen.ChatListScreen
 import com.example.prm392.presentation.notification_screen.NotificationScreen
 import com.example.prm392.presentation.profile_screen.ProfileScreen
 import com.example.prm392.utils.TokenSlice
@@ -86,7 +87,7 @@ fun AppNavigation(
             enterTransition = { slideInHorizontally(initialOffsetX = { it }) + fadeIn() },
             exitTransition = { slideOutHorizontally(targetOffsetX = { it }) + fadeOut() }
         ) { navBackStackEntry ->
-                NotificationScreen()
+                NotificationScreen(navController = navController)
         }
 
         // Home screen with Bottom Navigation
@@ -115,6 +116,19 @@ fun AppNavigation(
                     exit = fadeOut() + slideOutHorizontally(targetOffsetX = { it })
                 ) {
                     ChatScreen(modifier = Modifier.padding(paddingValues))
+                }
+            }
+        }
+        composable(route = Screen.ChatListScreen.route) {
+            Scaffold(
+                bottomBar = { BottomNavigationComponent(navController = navController) }
+            ) { paddingValues ->
+                AnimatedVisibility(
+                    visible = true,
+                    enter = fadeIn() + slideInHorizontally(initialOffsetX = { it }),
+                    exit = fadeOut() + slideOutHorizontally(targetOffsetX = { it })
+                ) {
+                    ChatListScreen(navController = navController, modifier = Modifier.padding(paddingValues))
                 }
             }
         }

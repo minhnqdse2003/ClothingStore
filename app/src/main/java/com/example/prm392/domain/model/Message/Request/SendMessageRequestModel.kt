@@ -1,6 +1,7 @@
 package com.example.prm392.domain.model.Message.Request
 
 import com.squareup.moshi.Json
+import java.time.OffsetDateTime
 
 data class SendMessageRequestModel (
     @Json(name = "userId")
@@ -8,7 +9,7 @@ data class SendMessageRequestModel (
     @Json(name = "recipientId")
     val recipientId: Int,
     @Json(name = "message")
-    val message: Int,
+    val message: String,
     @Json(name = "sentAt")
-    val sentAt: Int
+    val sentAt: OffsetDateTime
 )

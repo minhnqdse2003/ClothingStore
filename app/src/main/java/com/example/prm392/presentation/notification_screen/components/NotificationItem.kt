@@ -23,12 +23,17 @@ import com.example.prm392.data.dto.Notify.Notification
 
 @Composable
 fun NotificationItem(notification: Notification) {
+    val backgroundColor = if (notification.isRead) {
+        MaterialTheme.colorScheme.surfaceVariant
+    } else {
+        MaterialTheme.colorScheme.surface
+    }
     Row(
         modifier = Modifier
             .fillMaxWidth()
             .padding(20.dp)
             .background(
-                color = MaterialTheme.colorScheme.surface,
+                color = backgroundColor,
                 shape = RoundedCornerShape(20.dp)
             )
             .padding(20.dp),

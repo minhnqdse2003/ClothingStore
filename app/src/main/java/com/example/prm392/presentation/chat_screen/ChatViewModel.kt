@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.prm392.data.SignalRClient
 import com.example.prm392.data.dto.Message.Message
+import com.example.prm392.domain.model.Message.Request.SendMessageRequestModel
 import com.example.prm392.domain.service.Services
 import com.example.prm392.utils.Result
 import com.example.prm392.utils.TokenSlice
@@ -13,6 +14,8 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
+import java.time.OffsetDateTime
+import java.time.ZoneOffset
 import javax.inject.Inject
 
 @HiltViewModel
@@ -56,6 +59,35 @@ class ChatViewModel @Inject constructor(
             }
         }
     }
+
+    fun sendMessage(recipientId: Int, messageText: String) {
+        viewModelScope.launch {
+            try {
+                val senderId = tokenSlice.userId.first() ?: return@launch
+                val requestModel = SendMessageRequestModel(
+                    userId = senderId.toInt(),
+                    recipientId = recipientId,
+                    message = messageText,
+                    sentAt = OffsetDateTime.now(ZoneOffset.UTC)
+                )
+
+                services.sendMessageService(requestModel)
+                val newMessage = Message(
+                    id = 0,
+                    userId = senderId.toInt(),
+                    recipientId = recipientId,
+                    message = messageText,
+                    sentAt = System.currentTimeMillis().toInt()
+                )
+                currentMessages.add(newMessage)
+                _chatDataResponse.value = Result.Success(currentMessages)
+
+            } catch (e: Exception) {
+                _chatDataResponse.value = Result.Error(e)
+            }
+        }
+    }
+
 
     private fun observeNewMessages() {
         viewModelScope.launch {

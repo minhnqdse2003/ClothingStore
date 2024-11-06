@@ -58,7 +58,7 @@ class TokenSlice @Inject constructor(
             if (parts.size == 3) {
                 val payload = String(Base64.decode(parts[1], Base64.URL_SAFE))
                 val jsonObject = JSONObject(payload)
-                jsonObject.getString("userId")
+                jsonObject.getString("nameid")
             } else {
                 null
             }
