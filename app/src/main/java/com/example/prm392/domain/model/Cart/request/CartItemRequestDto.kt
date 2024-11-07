@@ -6,7 +6,7 @@ import kotlinx.parcelize.Parcelize
 
 @Parcelize
 data class CartItemRequestDto (
-    @Json(name = "productID")
+    @Json(name = "productId")
     val productID : Int,
     @Json(name = "quantity")
     val quantity: Int,

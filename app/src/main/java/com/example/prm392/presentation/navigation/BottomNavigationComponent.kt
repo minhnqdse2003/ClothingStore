@@ -30,7 +30,6 @@ fun BottomNavigationComponent(
     navController: NavController,
     modifier: Modifier = Modifier,
     contentColor: Color = MaterialTheme.colorScheme.onPrimaryContainer,
-    tonalElevation: Dp = NavigationBarDefaults.Elevation
 ) {
     val items = listOf(
         NavigationItem("Home", Icons.Filled.Home, Screen.HomeScreen.route),
@@ -61,7 +60,7 @@ fun BottomNavigationComponent(
                 selected = currentRoute?.destination?.route == item.route,
                 onClick = {
                     navController.navigate(item.route) {
-                        popUpTo(navController.graph.startDestinationId) { saveState = true }
+                        popUpTo(navController.graph.startDestinationId) { inclusive = true }
                         launchSingleTop = true
                         restoreState = true
                     }

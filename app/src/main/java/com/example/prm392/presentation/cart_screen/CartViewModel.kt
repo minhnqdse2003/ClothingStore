@@ -74,26 +74,29 @@ class CartViewModel @Inject constructor(
     }
 
     fun removeUserCart(cartItemId: Int) = viewModelScope.launch {
-        val responseData = _getUserCartResponse.value
-        if(responseData is Result.Success){
-            val updatedProductList = responseData.data.data.product.filterNot { it.product.productID == cartItemId }
-
-            _getUserCartResponse.value = Result.Success(
-                responseData.data.copy(
-                    data = responseData.data.data.copy(
-                        product = updatedProductList
-                    )
-                )
-            )
-        }
-
         cartService.removeUserCartService(cartItemId)
             .onStart { _removeUserCartResponse.value = Result.Loading }
-            .catch { _removeUserCartResponse.value = Result.Error(it) }
+            .catch {
+                _removeUserCartResponse.value = Result.Error(it)
+                val currentCartResponse = _getUserCartResponse.value
+                if (currentCartResponse is Result.Success) {
+                    val updatedProductList = currentCartResponse.data.data.product
+                        ?.filterNot { it.product.productID == cartItemId }
+
+                    _getUserCartResponse.value = Result.Success(
+                        currentCartResponse.data.copy(
+                            data = currentCartResponse.data.data.copy(
+                                product = updatedProductList
+                            )
+                        )
+                    )
+                }
+            }
             .collect { it ->
                 val currentCartResponse = _getUserCartResponse.value
-                if(currentCartResponse is Result.Success){
-                    val updatedProductList = currentCartResponse.data.data.product.filterNot { it.product.productID == cartItemId }
+                if (currentCartResponse is Result.Success) {
+                    val updatedProductList = currentCartResponse.data.data.product
+                        ?.filterNot { it.product.productID == cartItemId }
 
                     _getUserCartResponse.value = Result.Success(
                         currentCartResponse.data.copy(
@@ -109,39 +112,20 @@ class CartViewModel @Inject constructor(
     }
 
     fun updateCartItemQuantity(itemRequestDto: CartItemRequestDto) = viewModelScope.launch {
-        val currentResponse = _getUserCartResponse.value
-        if (currentResponse is Result.Success) {
-            val updatedCartItems = currentResponse.data.data.product.map { product ->
-                if (product.product.productID == itemRequestDto.productID) {
-                    product.copy(quantity = itemRequestDto.quantity) // Update the quantity
-                } else {
-                    product
-                }
-            }
-
-            // Update the state with the new cart items list
-            _getUserCartResponse.value = Result.Success(
-                currentResponse.data.copy(
-                    data = currentResponse.data.data.copy(product = updatedCartItems)
-                )
-            )
-        }
-        calculateTotal()
         cartService.updateUserCartItemQuantityService(itemRequestDto)
             .onStart { _updateCartQuantityResponse.value = Result.Loading }
-            .catch { _updateCartQuantityResponse.value = Result.Error(it) }
-            .collect {
-                _updateCartQuantityResponse.value =
-                    Result.Success(it.toUpdateUserCartItemQuantityResponseDto())
+            .catch {
+                _updateCartQuantityResponse.value = Result.Error(it)
                 val currentResponse = _getUserCartResponse.value
                 if (currentResponse is Result.Success) {
-                    val updatedCartItems = currentResponse.data.data.product.map { product ->
-                        if (product.product.productID == itemRequestDto.productID) {
-                            product.copy(quantity = itemRequestDto.quantity) // Update the quantity
-                        } else {
-                            product
+                    val updatedCartItems = currentResponse.data.data.product
+                        ?.map { product ->
+                            if (product.product.productID == itemRequestDto.productID) {
+                                product.copy(quantity = itemRequestDto.quantity)
+                            } else {
+                                product
+                            }
                         }
-                    }
 
                     _getUserCartResponse.value = Result.Success(
                         currentResponse.data.copy(
@@ -150,6 +134,10 @@ class CartViewModel @Inject constructor(
                     )
                 }
                 calculateTotal()
+            }
+            .collect {
+                _updateCartQuantityResponse.value =
+                    Result.Success(it.toUpdateUserCartItemQuantityResponseDto())
             }
     }
 
@@ -163,13 +151,13 @@ class CartViewModel @Inject constructor(
         calculateTotal()
     }
 
-    fun calculateTotal() {
+    private fun calculateTotal() {
         val currentData = _getUserCartResponse.value
         val currentSelected = _selectedProducts.value
         if (currentData is Result.Success) {
             _totalPrice.value = currentData.data.data.product
-                .filter { currentSelected.contains(it.product.productID) }
-                .sumOf { it.quantity * it.product.price }
+                ?.filter { currentSelected.contains(it.product.productID) }
+                ?.sumOf { it.quantity * it.product.price } ?: 0.0
         }
     }
 }

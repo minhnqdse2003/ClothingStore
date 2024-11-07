@@ -43,6 +43,7 @@ import coil3.request.ImageRequest
 import coil3.size.Size
 import com.example.prm392.R
 import com.example.prm392.ui.theme.Vegur
+import com.example.prm392.utils.formatPrice
 
 @Composable
 fun ProductItem(product: Product, onClick: () -> Unit) {
@@ -99,7 +100,7 @@ fun ProductItem(product: Product, onClick: () -> Unit) {
                     )
                     Spacer(modifier = Modifier.height(4.dp))
                     Text(
-                        text = "${product.price.toString()} VNĐ",
+                        text = formatPrice(product.price),
                         style = MaterialTheme.typography.titleMedium.copy(
                             fontWeight = FontWeight.Bold,
                             fontFamily = Vegur

@@ -38,7 +38,6 @@ class CartRepository @Inject constructor(
     }
 
     override suspend fun removeUserCart(
-        headers: Map<String, String>,
         cartItemId: Int
     ): RemoveCartResponseModel {
         return withContext(Dispatchers.Default) {

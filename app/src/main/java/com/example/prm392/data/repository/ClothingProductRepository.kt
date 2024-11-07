@@ -2,7 +2,7 @@ package com.example.prm392.data.repository
 
 import com.example.prm392.data.IClothingProductApi
 import com.example.prm392.data.dto.products.get_all.GetAllProductResponseModel
-import com.example.prm392.data.dto.products.get_by_id.GetProductByIdResponseModel
+import com.example.prm392.data.dto.products.get_all.Product
 import com.example.prm392.domain.model.ClothingProduct.request.ClothingProductFilterParam
 import com.example.prm392.domain.model.ClothingProduct.request.buildFilterMap
 import com.example.prm392.domain.repository.IClothingProductRepository
@@ -22,7 +22,7 @@ class ClothingProductRepository @Inject constructor(
         }
     }
 
-    override suspend fun getClothingById(id: Int): GetProductByIdResponseModel {
+    override suspend fun getClothingById(id: Int): Product {
         return withContext(Dispatchers.Default){
             api.getProductById(id)
         }

@@ -14,24 +14,24 @@ import retrofit2.http.PUT
 import retrofit2.http.Path
 
 interface ICartApi {
-    @GET("api/v1/cart")
+    @GET("api/v1/carts")
     suspend fun getUserCart(
         @HeaderMap headers: Map<String, String>,
     ): CartResponseModel
 
-    @POST("api/v1/cart")
+    @POST("api/v1/carts")
     suspend fun addUserCart(
         @HeaderMap headers: Map<String, String>,
         @Body requestModel:CartItemRequestDto
     ) : AddCartResponseModel
 
-    @DELETE("api/v1/cart/{Id}")
+    @DELETE("api/v1/carts/{Id}")
     suspend fun removeUserCart(
         @HeaderMap headers: Map<String, String>,
         @Path(value = "Id") cartItemId : Int
     ) : RemoveCartResponseModel
 
-    @PUT("api/v1/cart")
+    @PUT("api/v1/carts")
     suspend fun updateUserCartItemQuantity(
         @Body requestModel:CartItemRequestDto,
         @HeaderMap headers: Map<String, String>

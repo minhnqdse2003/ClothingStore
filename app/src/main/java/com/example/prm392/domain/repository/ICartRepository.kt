@@ -8,14 +8,14 @@ import com.example.prm392.domain.model.Cart.request.CartItemRequestDto
 
 interface ICartRepository {
 
-    suspend fun getUserCart(): CartResponseModel
+    suspend fun getUserCart(
+    ): CartResponseModel
 
     suspend fun addUserCart(
-        requestModel: CartItemRequestDto
+        requestModel: CartItemRequestDto,
     ): AddCartResponseModel
 
     suspend fun removeUserCart(
-        headers: Map<String, String>,
         cartItemId: Int
     ): RemoveCartResponseModel
 

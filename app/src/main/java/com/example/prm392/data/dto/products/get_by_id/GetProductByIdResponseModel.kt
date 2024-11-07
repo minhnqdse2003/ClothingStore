@@ -8,11 +8,7 @@ import com.squareup.moshi.JsonClass
 @JsonClass(generateAdapter = true)
 data class GetProductByIdResponseModel(
     @Json(name = "data")
-    val data: Product,
-    @Json(name = "status")
-    val status: Int,
-    @Json(name = "message")
-    val message: String,
+    val data: Product
 )
 
 fun GetProductByIdResponseModel.toGetProductByIdResponseDto() : GetProductByIdResponseDto {

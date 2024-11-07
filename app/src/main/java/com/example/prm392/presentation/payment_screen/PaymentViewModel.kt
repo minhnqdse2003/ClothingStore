@@ -74,7 +74,7 @@ class PaymentViewModel @Inject constructor(
                 }
                 .collect { product ->
                     val responseData =
-                        Result.Success<Product>(product.toGetProductByIdResponseDto().data)
+                        Result.Success<Product>(product)
                     _product.value = Result.Success<CartItemRequestViewModel>(
                         CartItemRequestViewModel(
                             price = responseData.data.price
@@ -101,7 +101,7 @@ class PaymentViewModel @Inject constructor(
                     _storeLocations.value = Result.Error(exception) // Handle errors
                 }
                 .collect { locations ->
-                    _storeLocations.value = Result.Success(locations.data)
+                    _storeLocations.value = Result.Success(locations)
                 }
         }
     }
@@ -129,8 +129,14 @@ class PaymentViewModel @Inject constructor(
                 // Fetch last known location
                 val location = getCurrentLocation()
                 location?.let { currentLocation ->
-                    _address.value = getCompleteAddressString(currentLocation.latitude,currentLocation.longitude)
-                    _currentLocationLatLng.value = LocationModel(Lat = currentLocation.latitude, Lng = currentLocation.longitude)
+                    _address.value = getCompleteAddressString(
+                        currentLocation.latitude,
+                        currentLocation.longitude
+                    )
+                    _currentLocationLatLng.value = LocationModel(
+                        Lat = currentLocation.latitude,
+                        Lng = currentLocation.longitude
+                    )
                     getAllStoreLocation()
                 } ?: run {
                     _address.value = "Unable to fetch location"
@@ -176,18 +182,19 @@ class PaymentViewModel @Inject constructor(
         }
 
     @SuppressLint("MissingPermission")
-    private suspend fun getCurrentLocation(): Location? = suspendCancellableCoroutine { continuation ->
-        fusedLocationClient.getCurrentLocation(
-            Priority.PRIORITY_HIGH_ACCURACY,
-            null
-        )
-            .addOnSuccessListener { location ->
-                continuation.resume(location)
-            }
-            .addOnFailureListener { exception ->
-                continuation.resumeWithException(exception)
-            }
-    }
+    private suspend fun getCurrentLocation(): Location? =
+        suspendCancellableCoroutine { continuation ->
+            fusedLocationClient.getCurrentLocation(
+                Priority.PRIORITY_HIGH_ACCURACY,
+                null
+            )
+                .addOnSuccessListener { location ->
+                    continuation.resume(location)
+                }
+                .addOnFailureListener { exception ->
+                    continuation.resumeWithException(exception)
+                }
+        }
 
     private fun checkLocationPermission(): Boolean {
         val context = getApplication<Application>()
@@ -221,7 +228,7 @@ class PaymentViewModel @Inject constructor(
 
 }
 
-data class LocationModel (
+data class LocationModel(
     val Lat: Double,
     val Lng: Double
 )

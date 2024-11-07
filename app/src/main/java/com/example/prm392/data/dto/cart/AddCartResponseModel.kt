@@ -5,16 +5,16 @@ import com.squareup.moshi.Json
 import com.squareup.moshi.JsonClass
 
 @JsonClass(generateAdapter = true)
-data class AddCartResponseModel (
+data class AddCartResponseModel(
     @Json(name = "data")
-    val data : String,
+    val data: String,
     @Json(name = "status")
     val status: Int,
     @Json(name = "message")
-    val message:String
+    val message: String
 )
 
-fun AddCartResponseModel.toAddCartResponseDto() : AddCartResponseDto {
+fun AddCartResponseModel.toAddCartResponseDto(): AddCartResponseDto {
     return AddCartResponseDto(
         data = data,
         status = status,

@@ -7,15 +7,11 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
-import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.LifecycleEventObserver
-import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.navigation.NavHostController
 import com.example.prm392.domain.model.User.Request.LoginRequestModel
 import com.example.prm392.presentation.detail_screen.components.LoadingScreen
@@ -106,7 +102,6 @@ fun LoginComponent(
                     LoginRequestModel(
                         username = username,
                         password = password,
-                        expiresInMins = 30
                     )
                 )
             },

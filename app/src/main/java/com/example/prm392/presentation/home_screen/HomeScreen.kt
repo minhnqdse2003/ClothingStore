@@ -79,7 +79,7 @@ fun HomeScreen(
     LaunchedEffect(gridState) {
         snapshotFlow { gridState.layoutInfo.visibleItemsInfo.lastOrNull()?.index }
             .collect { lastVisibleItemIndex ->
-                if (lastVisibleItemIndex == gridState.layoutInfo.totalItemsCount - 1 && hasMoreData && !isLoading) {
+                if (lastVisibleItemIndex == gridState.layoutInfo.totalItemsCount - 3 && hasMoreData && !isLoading) {
                     viewModel.loadMoreClothing()
                 }
             }
@@ -185,7 +185,6 @@ fun HomeScreen(
                     )
                 )
 
-
                 Icon(
                     modifier = Modifier
                         .size(24.dp),
@@ -264,7 +263,7 @@ fun HomeScreen(
                 }
 
                 is Result.Error -> {
-                    Text("Error loading products", modifier = Modifier.padding(16.dp))
+                    Text("Error loading products $clothingProducts", modifier = Modifier.padding(16.dp))
                 }
 
                 else -> {

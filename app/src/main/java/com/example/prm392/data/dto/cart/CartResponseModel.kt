@@ -8,9 +8,9 @@ import com.squareup.moshi.JsonClass
 @JsonClass(generateAdapter = true)
 data class CartResponseModel (
     @Json(name = "status")
-    val status: Int,
+    val status: Int?,
     @Json(name = "message")
-    val message:String,
+    val message:String?,
     @Json(name = "data")
     val data : CartResponseModelData
 )
@@ -26,7 +26,7 @@ fun CartResponseModel.toCartResponseDto():CartResponseDto {
 @JsonClass(generateAdapter = true)
 data class CartResponseModelData (
     @Json(name = "products")
-    val product: List<CartProductsResponseModelData>,
+    val product: List<CartProductsResponseModelData>?,
     @Json(name = "totalPrice")
     val totalPrice: Int,
 )

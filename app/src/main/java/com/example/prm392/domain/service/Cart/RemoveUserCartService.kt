@@ -10,6 +10,6 @@ class RemoveUserCartService @Inject constructor(
     private val repository: ICartRepository
 ) {
     suspend operator fun invoke(cartItemId: Int): Flow<RemoveCartResponseModel> = flow {
-        emit(repository.removeUserCart(emptyMap(), cartItemId))
+        emit(repository.removeUserCart(cartItemId))
     }
 }

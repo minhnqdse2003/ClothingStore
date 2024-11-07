@@ -1,7 +1,6 @@
 package com.example.prm392.presentation.cart_screen
 
 import android.annotation.SuppressLint
-import android.content.ClipData.Item
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
@@ -69,7 +68,106 @@ fun CartScreen(
 
             is Result.Success -> {
                 val cartItems = (cartResponse as Result.Success<CartResponseDto>).data.data
-                if (cartItems.product.isEmpty()) {
+
+                if (!cartItems.product.isNullOrEmpty()) {
+                    Text(
+                        text = "My Cart (${cartItems.product.size})",
+                        style = MaterialTheme.typography.headlineMedium,
+                        fontWeight = FontWeight.Bold,
+                        modifier = Modifier.padding(bottom = 8.dp)
+                    )
+
+                    LazyColumn(
+                        modifier = Modifier
+                            .weight(1f)
+                            .fillMaxWidth(),
+                        verticalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
+                        items(cartItems.product) { item ->
+                            CartItem(
+                                cartProduct = item,
+                                isSelected = selectedProductIds.contains(item.product.productID),
+                                onSelectionChanged = { isSelected ->
+                                    viewModel.toggleProductSelection(
+                                        item.product.productID,
+                                        isSelected
+                                    )
+                                },
+                                onRemove = { viewModel.removeUserCart(item.product.productID) },
+                                onUpdateQuantity = { newQuantity ->
+                                    viewModel.updateCartItemQuantity(
+                                        CartItemRequestDto(item.product.productID, newQuantity)
+                                    )
+                                }
+                            )
+                        }
+                    }
+
+                    HorizontalDivider(
+                        modifier = Modifier.padding(vertical = 8.dp),
+                        color = Color.Gray.copy(.2f),
+                        thickness = 1.dp
+                    )
+
+                    Row(
+                        horizontalArrangement = Arrangement.spacedBy(32.dp),
+                        verticalAlignment = Alignment.CenterVertically,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                    ) {
+                        Column(
+
+                        ) {
+                            Text(
+                                text = "Total Price",
+                                style = MaterialTheme.typography.titleSmall,
+                                fontWeight = FontWeight.Medium,
+                            )
+
+                            Text(
+                                text = "${formatPrice(totalPrice)} VNĐ",
+                                style = MaterialTheme.typography.titleMedium.copy(
+                                    color = colorResource(R.color.dark_green),
+                                    fontWeight = FontWeight.Bold,
+                                    fontFamily = Vegur
+                                ),
+                                fontWeight = FontWeight.Bold,
+                            )
+
+                        }
+
+                        Button(
+                            onClick = {
+                                if (selectedProductIds.isNotEmpty()) {
+                                    val cartProduct =
+                                        (cartResponse as Result.Success<CartResponseDto>).data.data.product
+                                            ?.filter { selectedProductIds.contains(it.product.productID) }
+                                    navController.currentBackStackEntry?.savedStateHandle?.set(
+                                        key = "Buy Cart",
+                                        value = cartProduct
+                                    )
+                                    navController.navigate(Screen.ProductPaymentScreen.route)
+                                }
+                            },
+                            enabled = selectedProductIds.isNotEmpty(),
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(top = 16.dp),
+                            shape = RoundedCornerShape(0.dp),
+                            colors = ButtonDefaults.buttonColors(Color.Black.copy(.7f))
+                        ) {
+                            Text(
+                                text = "Checkout ( ${selectedProductIds.size} )",
+                                color = Color.White,
+                                style = MaterialTheme.typography.titleLarge.copy(
+                                    fontFamily = Vegur,
+                                    fontWeight = FontWeight.Bold,
+                                ),
+                                fontSize = 18.sp
+                            )
+                        }
+                    }
+                } else {
                     Box(
                         modifier = Modifier
                             .fillMaxSize(),
@@ -106,102 +204,6 @@ fun CartScreen(
                                 )
                             }
                         }
-                    }
-                    return@Column
-                }
-
-                Text(
-                    text = "My Cart (${cartItems.product.size})",
-                    style = MaterialTheme.typography.headlineMedium,
-                    fontWeight = FontWeight.Bold,
-                    modifier = Modifier.padding(bottom = 8.dp)
-                )
-
-                LazyColumn(
-                    modifier = Modifier
-                        .weight(1f)
-                        .fillMaxWidth(),
-                    verticalArrangement = Arrangement.spacedBy(8.dp)
-                ) {
-                    items(cartItems.product) { item ->
-                        CartItem(
-                            cartProduct = item,
-                            isSelected = selectedProductIds.contains(item.product.productID),
-                            onSelectionChanged = { isSelected ->
-                                viewModel.toggleProductSelection(item.product.productID, isSelected)
-                            },
-                            onRemove = { viewModel.removeUserCart(item.product.productID) },
-                            onUpdateQuantity = { newQuantity ->
-                                viewModel.updateCartItemQuantity(
-                                    CartItemRequestDto(item.product.productID, newQuantity)
-                                )
-                            }
-                        )
-                    }
-                }
-
-                HorizontalDivider(
-                    modifier = Modifier.padding(vertical = 8.dp),
-                    color = Color.Gray.copy(.2f),
-                    thickness = 1.dp
-                )
-
-                Row(
-                    horizontalArrangement = Arrangement.spacedBy(32.dp),
-                    verticalAlignment = Alignment.CenterVertically,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                ) {
-                    Column(
-
-                    ) {
-                        Text(
-                            text = "Total Price",
-                            style = MaterialTheme.typography.titleSmall,
-                            fontWeight = FontWeight.Medium,
-                        )
-
-                        Text(
-                            text = "${formatPrice(totalPrice)} VNĐ",
-                            style = MaterialTheme.typography.titleMedium.copy(
-                                color = colorResource(R.color.dark_green),
-                                fontWeight = FontWeight.Bold,
-                                fontFamily = Vegur
-                            ),
-                            fontWeight = FontWeight.Bold,
-                        )
-
-                    }
-
-                    Button(
-                        onClick = {
-                            if (selectedProductIds.isNotEmpty()) {
-                                val cartProduct =
-                                    (cartResponse as Result.Success<CartResponseDto>).data.data.product
-                                        .filter { selectedProductIds.contains(it.product.productID) }
-                                navController.currentBackStackEntry?.savedStateHandle?.set(
-                                    key = "Buy Cart",
-                                    value = cartProduct
-                                )
-                                navController.navigate(Screen.ProductPaymentScreen.route)
-                            }
-                        },
-                        enabled = selectedProductIds.isNotEmpty(),
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(top = 16.dp),
-                        shape = RoundedCornerShape(0.dp),
-                        colors = ButtonDefaults.buttonColors(Color.Black.copy(.7f))
-                    ) {
-                        Text(
-                            text = "Checkout ( ${selectedProductIds.size} )",
-                            color = Color.White,
-                            style = MaterialTheme.typography.titleLarge.copy(
-                                fontFamily = Vegur,
-                                fontWeight = FontWeight.Bold,
-                            ),
-                            fontSize = 18.sp
-                        )
                     }
                 }
             }

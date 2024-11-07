@@ -1,6 +1,5 @@
 package com.example.prm392.presentation.product_screen
 
-import android.util.Log
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -31,7 +30,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -43,6 +41,7 @@ import com.example.prm392.presentation.navigation.Screen
 import com.example.prm392.ui.theme.Vegur
 import com.example.prm392.utils.MySpacer
 import com.example.prm392.utils.Result
+import com.example.prm392.utils.formatPrice
 
 @Composable
 fun ProductDetailsScreen(
@@ -65,7 +64,6 @@ fun ProductDetailsScreen(
     }
 
     LaunchedEffect(id) {
-        Log.d("Test", id)
         viewModel.getProduct(id.toInt())
     }
 
@@ -83,7 +81,12 @@ fun ProductDetailsScreen(
         ) {
             FloatingActionButton(
                 onClick = {
-                    navController.navigate(Screen.CartScreen.route)
+                    viewModel.addToCart {
+                        navController.navigate(Screen.CartScreen.route) {
+                            popUpTo(Screen.CartScreen.route) {inclusive = true}
+                            launchSingleTop = true
+                        }
+                    }
                 },
                 containerColor = Color.White,
                 modifier = Modifier
@@ -227,7 +230,7 @@ fun ProductDetailsContent(product: Product) {
             )
             MySpacer(8.dp)
             Text(
-                text = "${product.price} VNĐ",
+                text = formatPrice(product.price),
                 style = MaterialTheme.typography.titleLarge.copy(
                     color = Color.Red,
                     fontFamily = Vegur,

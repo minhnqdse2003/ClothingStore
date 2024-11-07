@@ -5,14 +5,14 @@ data class ClothingProductFilterParam(
     val categoryId:Int?
 )
 
-fun ClothingProductFilterParam.buildFilterMap(): Map<String, Any?> {
-    val filterMap = mutableMapOf<String, Any?>()
+fun ClothingProductFilterParam.buildFilterMap(): Map<String, String> {
+    val filterMap = mutableMapOf<String, String>()
 
     searchValue?.let { value ->
         if(value.isNotEmpty())
             filterMap["ProductName"] = value
     }
-    categoryId?.let { id -> filterMap["CategoryID"] = id }
+    categoryId?.let { id -> filterMap["CategoryID"] = id.toString() }
 
     return filterMap
 }

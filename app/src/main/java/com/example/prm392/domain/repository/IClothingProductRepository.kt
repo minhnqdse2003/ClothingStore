@@ -1,7 +1,7 @@
 package com.example.prm392.domain.repository
 
 import com.example.prm392.data.dto.products.get_all.GetAllProductResponseModel
-import com.example.prm392.data.dto.products.get_by_id.GetProductByIdResponseModel
+import com.example.prm392.data.dto.products.get_all.Product
 import com.example.prm392.domain.model.ClothingProduct.request.ClothingProductFilterParam
 
 interface IClothingProductRepository {
@@ -13,5 +13,5 @@ interface IClothingProductRepository {
 
     suspend fun getClothingById(
         id : Int
-    ) : GetProductByIdResponseModel
+    ) : Product
 }

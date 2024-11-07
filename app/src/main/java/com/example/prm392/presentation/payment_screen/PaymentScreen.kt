@@ -54,11 +54,9 @@ fun PaymentScreen(
     }
 
     LaunchedEffect(navController) {
-        navController.currentBackStackEntry?.savedStateHandle?.getLiveData<Int>("selectedId")
-            ?.observeForever { id ->
-                viewModel.fetchCurrentLocation()
-                selectedLocationId = id
-            }
+        val result = navController.currentBackStackEntry?.savedStateHandle?.get<Int>("selectedId")
+        viewModel.fetchCurrentLocation()
+        selectedLocationId = result
     }
 
     LaunchedEffect(listOfStoreLocation.value) {

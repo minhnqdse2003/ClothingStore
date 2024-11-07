@@ -4,7 +4,6 @@ import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.prm392.data.dto.category.get_all.toGetAllCategoryDto
 import com.example.prm392.data.dto.category.get_all.Category
 import com.example.prm392.data.dto.products.get_all.Product
 import com.example.prm392.data.dto.products.get_all.toGetAllProductResponseDto
@@ -73,9 +72,9 @@ class HomeScreenViewModel @Inject constructor(
 
     fun loadMoreClothing(
         endRefresh: (() -> Unit)? = null,
-        onFilter: Boolean? = false
+        onFilter: Boolean = false
     ) {
-        if (_isLoading.value || !_hasMoreData.value) return
+        if ((_isLoading.value || !_hasMoreData.value) && !onFilter) return
 
         if(isFirstLoading) {
             _isLoading.value = true
@@ -146,6 +145,8 @@ class HomeScreenViewModel @Inject constructor(
 
     fun onSearchCompleted(searchValue:String){
         searchInput.value = searchValue
+        _clothingProducts.value = Result.Success(data = emptyList())
+        currentPage.intValue = 1
         loadMoreClothing(onFilter = true)
     }
 
@@ -159,8 +160,7 @@ class HomeScreenViewModel @Inject constructor(
                     _clothingProducts.value = Result.Error(it)
                 }
                 .collect { responseModel ->
-                    val data = responseModel.toGetAllCategoryDto().data
-                    _categories.value = Result.Success<List<Category>>(data = data)
+                    _categories.value = Result.Success<List<Category>>(data = responseModel)
                 }
         }
     }
