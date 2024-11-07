@@ -71,7 +71,6 @@ fun ChatScreen(viewModel: ChatViewModel = hiltViewModel(),  modifier: Modifier =
     val chatDataResponse by viewModel.chatDataResponse.collectAsState()
     var newMessage by remember { mutableStateOf("") }
 
-    val listState = rememberLazyListState()
     Scaffold(
         topBar = { ChatTop(title = "") },
         bottomBar = { MessageInput(
@@ -79,7 +78,7 @@ fun ChatScreen(viewModel: ChatViewModel = hiltViewModel(),  modifier: Modifier =
             onMessageChanged = { newMessage = it },
             onMessageSent = {
                 if (newMessage.isNotBlank()) {
-                    mockMessages.add(Pair("Me", newMessage))
+                    viewModel.sendMessage(1,newMessage)
                     newMessage = ""
                 }
             }
@@ -94,7 +93,7 @@ fun ChatScreen(viewModel: ChatViewModel = hiltViewModel(),  modifier: Modifier =
                     }
                 ) { response ->
                     when (response) {
-                        is Result.Success -> MessageList(messages = response.data)
+                        is Result.Success -> MessageList(messages = response.data, viewModel)
                         is Result.Loading -> LoadingScreen()
                         is Result.Error -> ErrorScreen(
                             productTitle = "Chat",

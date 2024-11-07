@@ -30,6 +30,8 @@ class ChatViewModel @Inject constructor(
 
     private val currentMessages = mutableListOf<Message>()
 
+    private var currentPage = 1
+
     init {
         observeNewMessages()
         signalRClient.startConnection()
@@ -50,10 +52,12 @@ class ChatViewModel @Inject constructor(
                     .collect { response ->
                         recipientMessagesList.addAll(response.messages)
                     }
-                currentMessages.addAll((senderMessagesList + recipientMessagesList)
-                    .sortedBy { it.sentAt })
+                val allMessages = (senderMessagesList + recipientMessagesList)
+                    .sortedBy { it.sentAt }
+                currentMessages.addAll(0, allMessages)
 
                 _chatDataResponse.value = Result.Success(currentMessages)
+                currentPage = pageNumber
             } catch (e: Exception) {
                 _chatDataResponse.value = Result.Error(e)
             }
