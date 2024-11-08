@@ -7,6 +7,4 @@ data class LoginRequestModel (
     val username : String,
     @Json(name = "password")
     val password: String,
-    @Json(name = "expiresInMins")
-    val expiresInMins : Int?
 )

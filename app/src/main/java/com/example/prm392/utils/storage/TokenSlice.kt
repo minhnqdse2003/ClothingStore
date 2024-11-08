@@ -7,9 +7,13 @@ import android.util.Log
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.stateIn
 import org.json.JSONObject
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -58,8 +62,31 @@ class TokenSlice @Inject constructor(
         }
     }
 
-    suspend fun tokenExists(): Boolean {
-        return token.map { it != null }.first()
+    suspend fun checkAndHandleExistingToken(): Boolean {
+        val existingToken = dataStore.data.first()[tokenKey]
+        return existingToken?.isNotEmpty() ?: false
+    }
+    public fun decodeTokenPayload(token: String): Pair<String?, String?> {
+        val tokenEx= "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxIiwiZW1haWwiOiJ1c2VyQGV4YW1wbGUuY29tIiwiaHR0cDovL3NjaGVtYXMubWljcm9zb2Z0LmNvbS93cy8yMDA4LzA2L2lkZW50aXR5L2NsYWltcy9yb2xlIjoiQ3VzdG9tZXIiLCJleHAiOjE3MzM2MzQ5MjN9.SUoxSquALNIdrw_ehSsXq-GNuiNP85nHzhE7h8MGBFo"
+        return try {
+            val parts = tokenEx.split(".")
+            Log.d("Parts","${parts}" )
+            if (parts.size == 3) {
+                val payload = String(Base64.decode(parts[1], Base64.URL_SAFE))
+                val jsonObject = JSONObject(payload)
+                val userId = jsonObject.getString("sub")
+                val role = jsonObject.getString("http://schemas.microsoft.com/ws/2008/06/identity/claims/role")
+//                Log.d("Parts","${jsonObject}" )
+//                Log.d("Parts", userId)
+//                Log.d("Parts", "tẽ")
+//                Log.d("Parts", role)
+                Pair(userId,role)
+            } else {
+                Pair(null, null)
+            }
+        } catch (e: Exception) {
+            Pair(null, null)
+        }
     }
     public fun decodeTokenPayload(token: String): Pair<String?, String?> {
         val tokenEx= "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxIiwiZW1haWwiOiJ1c2VyQGV4YW1wbGUuY29tIiwiaHR0cDovL3NjaGVtYXMubWljcm9zb2Z0LmNvbS93cy8yMDA4LzA2L2lkZW50aXR5L2NsYWltcy9yb2xlIjoiQ3VzdG9tZXIiLCJleHAiOjE3MzM2MzQ5MjN9.SUoxSquALNIdrw_ehSsXq-GNuiNP85nHzhE7h8MGBFo"

@@ -3,7 +3,6 @@ package com.example.prm392.presentation.login_screen
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.prm392.data.dto.Users.GetUserAuth.toGetAuthResponse
-import com.example.prm392.data.dto.Users.toLoginResponseDto
 import com.example.prm392.domain.model.User.Request.LoginRequestModel
 import com.example.prm392.domain.model.User.Response.GetUserAuthResponseDto
 import com.example.prm392.domain.model.User.Response.RegisterResponseDto
@@ -41,8 +40,8 @@ class LoginViewModel @Inject constructor(
                 _loginServiceResponse.value = Result.Error(it)
             }
             .collect{
-                val result = it.toLoginResponseDto()
-                tokenSlice.saveToken(result.accessToken)
+                val result = it
+                tokenSlice.saveToken(result.token)
                 _loginServiceResponse.value = Result.Success<String>("")
             }
     }

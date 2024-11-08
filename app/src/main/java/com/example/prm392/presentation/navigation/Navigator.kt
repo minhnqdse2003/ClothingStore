@@ -12,6 +12,9 @@ sealed class Screen(override val route: String) : NavigationDestination {
     object HomeScreen : Screen("home")
     object SearchScreen : Screen("search")
     object DetailScreen : Screen("detail/{title}")
+    object ProductDetailScreen : Screen("product_detail")
+    object ProductPaymentScreen : Screen("payment")
+    object MapScreen : Screen("map")
     object ChatScreen : Screen("message")
     object ChatListScreen : Screen("chat")
     object CartScreen : Screen("cart")
@@ -20,8 +23,6 @@ sealed class Screen(override val route: String) : NavigationDestination {
 }
 
 class Navigator {
-
-    // StateFlow to hold the current destination, with LoginScreen as the initial destination
     private val _destination = MutableStateFlow<NavigationDestination>(Screen.LoginScreen)
     val destination = _destination.asStateFlow()
 

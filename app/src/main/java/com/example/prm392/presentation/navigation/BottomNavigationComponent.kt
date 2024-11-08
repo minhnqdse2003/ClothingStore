@@ -1,8 +1,11 @@
+import androidx.compose.foundation.border
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.Chat
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.ShoppingCart
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationBar
@@ -27,7 +30,6 @@ fun BottomNavigationComponent(
     navController: NavController,
     modifier: Modifier = Modifier,
     contentColor: Color = MaterialTheme.colorScheme.onPrimaryContainer,
-    tonalElevation: Dp = NavigationBarDefaults.Elevation
 ) {
     val items = listOf(
         NavigationItem("Home", Icons.Filled.Home, Screen.HomeScreen.route),
@@ -40,7 +42,7 @@ fun BottomNavigationComponent(
 
     NavigationBar(
         modifier = modifier
-            .topBorder(12.dp, color = Color.Gray),
+            .border(1.dp, color = Color.Gray.copy(.4f)),
         containerColor = Color.White,
         contentColor = contentColor,
     ) {
@@ -58,7 +60,7 @@ fun BottomNavigationComponent(
                 selected = currentRoute?.destination?.route == item.route,
                 onClick = {
                     navController.navigate(item.route) {
-                        popUpTo(navController.graph.startDestinationId) { saveState = true }
+                        popUpTo(navController.graph.startDestinationId) { inclusive = true }
                         launchSingleTop = true
                         restoreState = true
                     }
