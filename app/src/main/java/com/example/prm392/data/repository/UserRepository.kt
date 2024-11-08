@@ -2,6 +2,7 @@ package com.example.prm392.data.repository
 
 import com.example.prm392.data.IUserApi
 import com.example.prm392.data.dto.Users.GetUserAuth.UserResponseModel
+import com.example.prm392.data.dto.Users.GetUserProfile.GetUserProfileResponseModel
 import com.example.prm392.data.dto.Users.LoginResponseModel
 import com.example.prm392.domain.model.User.Request.LoginRequestModel
 import com.example.prm392.domain.model.User.Request.RegisterRequestModel
@@ -41,6 +42,15 @@ class UserRepository @Inject constructor(
                 isTokenIncluded = true
             )
             api.getAuth(header)
+        }
+    }
+
+    override suspend fun getUserProfile(): GetUserProfileResponseModel {
+        return withContext(Dispatchers.Default) {
+            val header = headerProcessing.createDynamicHeaders(
+                isTokenIncluded = true
+            )
+            api.getUserProfile(header)
         }
     }
 }

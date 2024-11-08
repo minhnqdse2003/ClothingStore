@@ -67,6 +67,7 @@ dependencies {
     implementation(libs.androidx.material3)
     implementation(libs.play.services.location)
     implementation(libs.androidx.tools.core)
+    implementation(libs.androidx.compose.material)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
@@ -105,5 +106,8 @@ dependencies {
     implementation("com.google.maps.android:maps-compose:6.1.0")
     implementation("com.google.maps.android:android-maps-utils:3.9.0")
     //signalr
-    implementation ("com.microsoft.signalr:signalr:5.0.11")
+    implementation("com.microsoft.signalr:signalr:5.0.11")
+    //Icon
+    implementation("com.airbnb.android:lottie-compose:6.6.0")
+
 }

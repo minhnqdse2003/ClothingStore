@@ -14,17 +14,16 @@ import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.prm392.data.dto.cart.CartProductsResponseModelData
 import com.example.prm392.data.dto.products.get_all.Product
-import com.example.prm392.data.dto.products.get_by_id.toGetProductByIdResponseDto
 import com.example.prm392.data.dto.store_location.get_all.StoreLocation
 import com.example.prm392.domain.model.Cart.request.CartItemRequestDto
 import com.example.prm392.domain.model.Cart.request.CartItemRequestViewModel
 import com.example.prm392.domain.model.Order.OrderRequestDto
 import com.example.prm392.domain.service.ClothingProduct.ClothingProductService
+import com.example.prm392.domain.service.orders.OrdersService
 import com.example.prm392.domain.service.store_location.StoreLocationService
 import com.example.prm392.utils.Result
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.Priority
-import com.squareup.moshi.Moshi
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -32,7 +31,6 @@ import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.suspendCancellableCoroutine
-import okhttp3.OkHttpClient
 import java.io.IOException
 import java.util.*
 import javax.inject.Inject
@@ -45,6 +43,7 @@ class PaymentViewModel @Inject constructor(
     private val fusedLocationClient: FusedLocationProviderClient,
     private val service: ClothingProductService,
     private val storeLocationService: StoreLocationService,
+    private val ordersService: OrdersService
 ) : AndroidViewModel(application) {
 
     private val _address = MutableStateFlow<String?>("Fetching address...")
@@ -61,7 +60,7 @@ class PaymentViewModel @Inject constructor(
 
     private val _selectedLocation = mutableStateOf<Int>(1)
 
-    private val cartItems = mutableListOf<CartItemRequestDto>()
+    val cartItems = mutableListOf<CartItemRequestDto>()
 
     fun getCurrentProduct(id: Int) {
         viewModelScope.launch {
@@ -107,15 +106,30 @@ class PaymentViewModel @Inject constructor(
     }
 
 
-    fun placeOrder() {
-        val requestModel = _address.value?.let {
-            OrderRequestDto(
-                cartItems = cartItems,
-                billingAddress = it,
-                _selectedLocation.value
-            )
+    fun placeOrder(onNavigate: (route:String) -> Unit) {
+        if(_address.value != null)
+        {
+            val requestModel =
+                OrderRequestDto(
+                    cartItems = cartItems,
+                    billingAddress = _address.value!!,
+                    _selectedLocation.value
+                )
+
+            viewModelScope.launch {
+                ordersService.placeOrder(requestModel)
+                    .onStart {
+                        Log.d("Orders-Status","Start")
+                    }
+                    .catch { exception ->
+                        Log.d("Orders-Status", exception.localizedMessage ?: "Error")
+                    }
+                    .collect{
+                        Log.d("Orders-Status", it)
+                        onNavigate(it)
+                    }
+            }
         }
-        Log.d("Order", requestModel.toString())
     }
 
     fun fetchCurrentLocation() {

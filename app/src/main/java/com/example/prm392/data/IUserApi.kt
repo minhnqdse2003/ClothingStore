@@ -2,6 +2,7 @@ package com.example.prm392.data
 
 import com.example.prm392.data.dto.Users.LoginResponseModel
 import com.example.prm392.data.dto.Users.GetUserAuth.UserResponseModel
+import com.example.prm392.data.dto.Users.GetUserProfile.GetUserProfileResponseModel
 import com.example.prm392.domain.model.User.Request.LoginRequestModel
 import com.example.prm392.domain.model.User.Request.RegisterRequestModel
 import com.example.prm392.domain.model.User.Response.RegisterResponseDto
@@ -28,4 +29,9 @@ interface IUserApi {
         @HeaderMap headers: Map<String,String>,
         @Body data: RegisterRequestModel
     ) : RegisterResponseDto
+
+    @GET("api/User/info")
+    suspend fun getUserProfile(
+        @HeaderMap headers: Map<String,String>
+    ) : GetUserProfileResponseModel
 }

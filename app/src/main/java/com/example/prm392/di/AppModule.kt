@@ -7,6 +7,7 @@ import com.example.prm392.data.ICategoryApi
 import com.example.prm392.data.IClothingProductApi
 import com.example.prm392.data.IMessageApi
 import com.example.prm392.data.INotifyAPI
+import com.example.prm392.data.IOrdersApi
 import com.example.prm392.data.IProductApi
 import com.example.prm392.data.IStoreLocationApi
 import com.example.prm392.data.IUserApi
@@ -15,6 +16,7 @@ import com.example.prm392.data.repository.CategoryRepository
 import com.example.prm392.data.repository.ClothingProductRepository
 import com.example.prm392.data.repository.MessageRepository
 import com.example.prm392.data.repository.NotifyRepository
+import com.example.prm392.data.repository.OrdersRepository
 import com.example.prm392.data.repository.ProductRepository
 import com.example.prm392.data.repository.StoreLocationRepository
 import com.example.prm392.data.repository.UserRepository
@@ -40,9 +42,12 @@ import com.example.prm392.domain.service.NotifyService.NotifyService
 import com.example.prm392.domain.service.NotifyService.UpdateStatus
 import com.example.prm392.domain.service.Services
 import com.example.prm392.domain.service.User.GetAuthUserService
+import com.example.prm392.domain.service.User.GetUserProfileService
 import com.example.prm392.domain.service.User.LoginService
 import com.example.prm392.domain.service.User.RegisterService
 import com.example.prm392.domain.service.User.UserService
+import com.example.prm392.domain.service.orders.OrdersService
+import com.example.prm392.domain.service.orders.PlaceOrderService
 import com.example.prm392.domain.service.store_location.GetAllStoreLocationService
 import com.example.prm392.domain.service.store_location.StoreLocationService
 import com.example.prm392.presentation.navigation.Navigator
@@ -141,7 +146,11 @@ object AppModule {
 
     @Provides
     @Singleton
-    fun provideServices(repository: ProductRepository, messageRepository: MessageRepository, notifyRepository: NotifyRepository): Services {
+    fun provideServices(
+        repository: ProductRepository,
+        messageRepository: MessageRepository,
+        notifyRepository: NotifyRepository
+    ): Services {
         return Services(
             getProductDataService = GetProductDataService(repository),
             getSearchProductDataService = GetSearchProductDataService(repository),
@@ -171,7 +180,8 @@ object AppModule {
         return UserService(
             loginService = LoginService(repository),
             registerService = RegisterService(repository),
-            getAuthUserService = GetAuthUserService(repository)
+            getAuthUserService = GetAuthUserService(repository),
+            getUserProfile = GetUserProfileService(repository)
         )
     }
 
@@ -267,6 +277,7 @@ object AppModule {
             getAllStoreLocation = GetAllStoreLocationService(repository)
         )
     }
+
     @Provides
     @Singleton
     fun provideMessageApi(retrofit: Retrofit): IMessageApi {
@@ -275,7 +286,10 @@ object AppModule {
 
     @Provides
     @Singleton
-    fun provideMessageRepository(api: IMessageApi, headerProcessing: HeaderProcessing): MessageRepository {
+    fun provideMessageRepository(
+        api: IMessageApi,
+        headerProcessing: HeaderProcessing
+    ): MessageRepository {
         return MessageRepository(api, headerProcessing)
     }
 
@@ -288,6 +302,7 @@ object AppModule {
             getListChat = GetListChat(repository)
         )
     }
+
     @Provides
     @Singleton
     fun providerNotifyApi(retrofit: Retrofit): INotifyAPI {
@@ -296,7 +311,10 @@ object AppModule {
 
     @Provides
     @Singleton
-    fun providerNotifyRepository(api: INotifyAPI, headerProcessing: HeaderProcessing): NotifyRepository {
+    fun providerNotifyRepository(
+        api: INotifyAPI,
+        headerProcessing: HeaderProcessing
+    ): NotifyRepository {
         return NotifyRepository(api, headerProcessing)
     }
 
@@ -306,6 +324,29 @@ object AppModule {
         return NotifyService(
             getNotify = GetNotify(repository),
             updateStatus = UpdateStatus(repository)
+        )
+    }
+
+    @Provides
+    @Singleton
+    fun providerOrdersApi(retrofit: Retrofit): IOrdersApi {
+        return retrofit.create(IOrdersApi::class.java)
+    }
+
+    @Provides
+    @Singleton
+    fun providerOrdersRepository(
+        api: IOrdersApi,
+        headerProcessing: HeaderProcessing
+    ): OrdersRepository {
+        return OrdersRepository(api, headerProcessing)
+    }
+
+    @Provides
+    @Singleton
+    fun providerOrdersService(repository: OrdersRepository): OrdersService {
+        return OrdersService(
+            placeOrder = PlaceOrderService(repository)
         )
     }
 }

@@ -13,7 +13,6 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.navigation.NavController
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -32,6 +31,7 @@ import com.example.prm392.presentation.payment_screen.PaymentScreen
 import com.example.prm392.presentation.product_screen.ProductDetailsScreen
 import com.example.prm392.presentation.chat_screen.ChatListScreen
 import com.example.prm392.presentation.notification_screen.NotificationScreen
+import com.example.prm392.presentation.payment_screen.PayOsPaymentScreen
 import com.example.prm392.presentation.profile_screen.ProfileScreen
 import com.example.prm392.utils.TokenSlice
 
@@ -44,7 +44,7 @@ fun AppNavigation(
     val role = tokenSlice.role.collectAsState(initial = null).value
     val userId = tokenSlice.userId.collectAsState(initial = null).value
 
-    LaunchedEffect (Unit) {
+    LaunchedEffect(Unit) {
         tokenSlice.decodeTokenPayload("")
     }
     val startDestination = if (tokenExists) {
@@ -108,7 +108,7 @@ fun AppNavigation(
             exitTransition = { slideOutHorizontally(targetOffsetX = { it }) + fadeOut() }
         ) { navBackStackEntry ->
             navBackStackEntry.arguments?.getString("id")?.let { id ->
-                ProductDetailsScreen(id,navController)
+                ProductDetailsScreen(id, navController)
             }
         }
 
@@ -157,7 +157,10 @@ fun AppNavigation(
                     enter = fadeIn() + slideInHorizontally(initialOffsetX = { it }),
                     exit = fadeOut() + slideOutHorizontally(targetOffsetX = { it })
                 ) {
-                    CartScreen(modifier = Modifier.padding(paddingValues),navController = navController)
+                    CartScreen(
+                        modifier = Modifier.padding(paddingValues),
+                        navController = navController
+                    )
                 }
             }
         }
@@ -184,9 +187,42 @@ fun AppNavigation(
                 enter = fadeIn() + slideInHorizontally(initialOffsetX = { it }),
                 exit = fadeOut() + slideOutHorizontally(targetOffsetX = { it })
             ) {
-                val model:CartItemRequestDto? = navController.previousBackStackEntry?.savedStateHandle?.get<CartItemRequestDto>("Buy")
-                val models = navController.previousBackStackEntry?.savedStateHandle?.get<List<CartProductsResponseModelData>>("Buy Cart")
+                val model: CartItemRequestDto? =
+                    navController.previousBackStackEntry?.savedStateHandle?.get<CartItemRequestDto>(
+                        "Buy"
+                    )
+                val models =
+                    navController.previousBackStackEntry?.savedStateHandle?.get<List<CartProductsResponseModelData>>(
+                        "Buy Cart"
+                    )
                 PaymentScreen(model = model, navController = navController, models = models)
+            }
+        }
+
+        composable(route = Screen.PaymentSuccessScreen.route) {
+            AnimatedVisibility(
+                visible = true,
+                enter = fadeIn() + slideInHorizontally(initialOffsetX = { it }),
+                exit = fadeOut() + slideOutHorizontally(targetOffsetX = { it })
+            ) {
+                PaymentSuccessScreen(
+                    onNavigateToHomePage = {
+                        navController.navigate(Screen.HomeScreen.route)
+                    }
+                )
+            }
+        }
+
+        composable(route = Screen.PayOsPaymentScreen.route) {
+            AnimatedVisibility(
+                visible = true,
+                enter = fadeIn() + slideInHorizontally(initialOffsetX = { it }),
+                exit = fadeOut() + slideOutHorizontally(targetOffsetX = { it })
+            ) {
+                val url:String? = navController.previousBackStackEntry?.savedStateHandle?.get<String?>("PaymentUrl")
+                url?.let {
+                    PayOsPaymentScreen(navController = navController, paymentUrl = url)
+                }
             }
         }
 

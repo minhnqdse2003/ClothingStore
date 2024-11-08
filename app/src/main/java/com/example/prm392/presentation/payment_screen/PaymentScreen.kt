@@ -46,6 +46,8 @@ fun PaymentScreen(
     var selectedLocationData by remember { mutableStateOf<StoreLocation?>(null) }
 
     LaunchedEffect(Unit) {
+        if (viewModel.cartItems.isNotEmpty()) return@LaunchedEffect
+
         if (model != null) {
             viewModel.getCurrentProduct(model.productID)
         } else if (models != null) {
@@ -284,7 +286,16 @@ fun PaymentScreen(
 
                     FloatingActionButton(
                         onClick = {
-                            viewModel.placeOrder()
+                            viewModel.placeOrder(
+                                onNavigate = { route: String ->
+                                    navController.navigate(Screen.PayOsPaymentScreen.route) {
+                                        navController.currentBackStackEntry?.savedStateHandle?.set<String>(
+                                            key = "PaymentUrl",
+                                            value = route
+                                        )
+                                    }
+                                }
+                            )
                         },
                         containerColor = Color.Black,
                         modifier = Modifier
