@@ -12,7 +12,7 @@ class NotifyRepository @Inject constructor(
     private val api: INotifyAPI,
     private val headerProcessing: HeaderProcessing
 ) : INotifyRepository {
-    override suspend fun getNotifyById(id: Int): GetNotifyResponseModel {
+    override suspend fun getNotifyById(id: Int): List<GetNotifyResponseModel> {
         return withContext(Dispatchers.Default) {
             val header = headerProcessing.createDynamicHeaders(
                 isTokenIncluded = true

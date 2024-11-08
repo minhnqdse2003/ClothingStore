@@ -11,7 +11,7 @@ interface INotifyAPI {
     suspend fun getNotify(
         @HeaderMap headers: Map<String, String>,
         @Query("userId") userId: Int = 71,
-    ): GetNotifyResponseModel
+    ): List<GetNotifyResponseModel>
 
     @PUT("api/Notification/mark-as-read")
     suspend fun updateStatus(

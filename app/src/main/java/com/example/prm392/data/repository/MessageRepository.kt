@@ -1,6 +1,7 @@
 package com.example.prm392.data.repository
 
 import com.example.prm392.data.IMessageApi
+import com.example.prm392.data.dto.Message.GetListChatModel
 import com.example.prm392.data.dto.Message.GetMessagesResponseModel
 import com.example.prm392.data.dto.Message.SendMessageResponseModel
 import com.example.prm392.domain.model.Message.Request.SendMessageRequestModel
@@ -26,6 +27,16 @@ class MessageRepository @Inject constructor(
                 isTokenIncluded = true
             )
             api.getMessageData(header, recipientId, pageSize, pageNumber)
+        }
+    }
+    override suspend fun getListChat(
+        userId: Int,
+    ): List<GetListChatModel> {
+        return withContext(Dispatchers.Default) {
+            val header = headerProcessing.createDynamicHeaders(
+                isTokenIncluded = true
+            )
+            api.getListChat(header,userId)
         }
     }
 

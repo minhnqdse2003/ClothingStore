@@ -31,7 +31,7 @@ fun BottomNavigationComponent(
 ) {
     val items = listOf(
         NavigationItem("Home", Icons.Filled.Home, Screen.HomeScreen.route),
-        NavigationItem("Chat", Icons.AutoMirrored.Filled.Chat, Screen.ChatScreen.route),
+        NavigationItem("Chat", Icons.AutoMirrored.Filled.Chat, Screen.ChatListScreen.route),
         NavigationItem("Cart", Icons.Filled.ShoppingCart, Screen.CartScreen.route),
         NavigationItem("Profile", Icons.Filled.Person, Screen.ProfileScreen.route)
     )

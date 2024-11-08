@@ -13,6 +13,7 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.navigation.NavController
 import com.example.prm392.presentation.chat_screen.components.MessageInput
 import com.example.prm392.presentation.chat_screen.components.MessageList
 import com.example.prm392.presentation.detail_screen.components.ErrorScreen
@@ -21,64 +22,25 @@ import com.example.prm392.utils.Result
 
  @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ChatScreen(viewModel: ChatViewModel = hiltViewModel(),  modifier: Modifier = Modifier ) {
+fun ChatScreen(viewModel: ChatViewModel = hiltViewModel(), navController: NavController) {
     LaunchedEffect(true) {
         viewModel.fetchMessages(pageSize = 100, pageNumber = 1)
+        viewModel.observeNewMessages()
 
     }
-    val mockMessages = remember {
-        mutableStateListOf(
-            Pair("A", "Hello! How can I help you today?"),
-            Pair("Me", "I have a question about your products."),
-            Pair("A", "Of course! Please tell me more."),
-            Pair("Me", "I'm looking for a specific item."),
-            Pair("A", "I'll be happy to help you find it!"),
-            Pair("A", "Hello! How can I help you today?"),
-            Pair("Me", "I have a question about your products."),
-            Pair("A", "Of course! Please tell me more."),
-            Pair("Me", "I'm looking for a specific item."),
-            Pair("A", "I'll be happy to help you find it!"),
-            Pair("A", "Hello! How can I help you today?"),
-            Pair("Me", "I have a question about your products."),
-            Pair("A", "Of course! Please tell me more."),
-            Pair("Me", "I'm looking for a specific item."),
-            Pair("A", "I'll be happy to help you find it!"),
-            Pair("A", "Hello! How can I help you today?"),
-            Pair("Me", "I have a question about your products."),
-            Pair("A", "Of course! Please tell me more."),
-            Pair("Me", "I'm looking for a specific item."),
-            Pair("A", "I'll be happy to help you find it!"),
-            Pair("A", "Hello! How can I help you today?"),
-            Pair("Me", "I have a question about your products."),
-            Pair("A", "Of course! Please tell me more."),
-            Pair("Me", "I'm looking for a specific item."),
-            Pair("A", "I'll be happy to help you find it!"),
-            Pair("A", "Hello! How can I help you today?"),
-            Pair("Me", "I have a question about your products."),
-            Pair("A", "Of course! Please tell me more."),
-            Pair("Me", "I'm looking for a specific item."),
-            Pair("A", "I'll be happy to help you find it!"),
-            Pair("A", "Hello! How can I help you today?"),
-            Pair("Me", "I have a question about your products."),
-            Pair("A", "Of course! Please tell me more."),
-            Pair("Me", "I'm looking for a specific item."),
-            Pair("A", "I'll be happy to help you find it!")
-        )
-    }
-
 
 //    val chatDataResponse: Result<List<Pair<String, String>>> = Result.Success(mockMessages)
     val chatDataResponse by viewModel.chatDataResponse.collectAsState()
     var newMessage by remember { mutableStateOf("") }
 
     Scaffold(
-        topBar = { ChatTop(title = "") },
+        topBar = { ChatTop(title = "", navController = navController ) },
         bottomBar = { MessageInput(
             newMessage = newMessage,
             onMessageChanged = { newMessage = it },
             onMessageSent = {
                 if (newMessage.isNotBlank()) {
-                    viewModel.sendMessage(1,newMessage)
+                    viewModel.sendMessage(newMessage)
                     newMessage = ""
                 }
             }

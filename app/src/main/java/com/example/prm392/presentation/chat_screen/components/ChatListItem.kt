@@ -31,7 +31,8 @@ fun ChatListItem(
             modifier = Modifier
                 .size(48.dp)
                 .clip(RoundedCornerShape(24.dp))
-                .background(Color.Gray)
+                .background(Color.Gray),
+
         )
 
         Spacer(modifier = Modifier.width(12.dp))
@@ -41,13 +42,13 @@ fun ChatListItem(
                 text = chat.title,
                 style = MaterialTheme.typography.titleMedium
             )
-            Spacer(modifier = Modifier.height(4.dp))
-            Text(
-                text = chat.lastMessage,
-                style = MaterialTheme.typography.bodySmall,
-                color = Color.Gray,
-                maxLines = 1
-            )
+//            Spacer(modifier = Modifier.height(4.dp))
+//            Text(
+//                text = chat.lastMessage,
+//                style = MaterialTheme.typography.bodySmall,
+//                color = Color.Gray,
+//                maxLines = 1
+//            )
         }
 
         Spacer(modifier = Modifier.width(8.dp))

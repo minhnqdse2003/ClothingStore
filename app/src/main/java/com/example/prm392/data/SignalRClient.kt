@@ -18,7 +18,7 @@ class SignalRClient @Inject constructor() {
         .build()
 
     private val _newMessages = MutableSharedFlow<Message>(
-        replay = 0,
+        replay = 1,
         onBufferOverflow = BufferOverflow.DROP_OLDEST
     )
     val newMessages: SharedFlow<Message> get() = _newMessages

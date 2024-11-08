@@ -63,7 +63,7 @@ dependencies {
     implementation(libs.androidx.ui.tooling.preview)
     implementation(libs.androidx.material3)
     implementation(libs.androidx.tools.core)
-    implementation(libs.protolite.well.known.types)
+//    implementation(libs.protolite.well.known.types)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
@@ -89,7 +89,6 @@ dependencies {
     implementation("io.coil-kt.coil3:coil-compose:3.0.0-rc01")
     implementation("io.coil-kt.coil3:coil-network-okhttp:3.0.0-rc01")
 
-    implementation("com.squareup.okhttp3:logging-interceptor:4.12.0")
     implementation("androidx.hilt:hilt-navigation-compose:1.2.0")
 
     //storage

@@ -2,10 +2,13 @@ package com.example.prm392.presentation.chat_screen
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.navigation.NavController
 import com.example.prm392.data.SignalRClient
+import com.example.prm392.data.dto.Message.GetListChatModel
 import com.example.prm392.data.dto.Message.Message
 import com.example.prm392.domain.model.Message.Request.SendMessageRequestModel
 import com.example.prm392.domain.service.Services
+import com.example.prm392.presentation.navigation.Navigator
 import com.example.prm392.utils.Result
 import com.example.prm392.utils.TokenSlice
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -22,7 +25,7 @@ import javax.inject.Inject
 class ChatViewModel @Inject constructor(
     private val services: Services,
      val tokenSlice: TokenSlice,
-    private val signalRClient: SignalRClient
+    private val signalRClient: SignalRClient,
 ) : ViewModel() {
 
     private val _chatDataResponse = MutableStateFlow<Result<List<Message>>>(Result.Idle)
@@ -32,23 +35,48 @@ class ChatViewModel @Inject constructor(
 
     private var currentPage = 1
 
-    init {
-        observeNewMessages()
-        signalRClient.startConnection()
+    private var receptId = 1
+
+
+//    init {
+//        observeNewMessages()
+//      signalRClient.startConnection()
+//
+//    }
+
+    suspend fun checkPageByRole(navController: NavController){
+        val role = tokenSlice.role.first() ?: "Customer"
+        if (role == "Staff"){
+            navController.navigate("chat")
+        } else{
+            onChooseUser(1, navController)
+        }
+    }
+    fun onChooseUser(user: Int, navController: NavController){
+        receptId = user
+        navController.navigate("message")
+    }
+    fun fetchListMessage(){
+        viewModelScope.launch {
+        }
+
     }
 
     fun fetchMessages(pageSize: Int, pageNumber: Int) {
         viewModelScope.launch {
             val senderMessagesList = mutableListOf<Message>()
             val recipientMessagesList = mutableListOf<Message>()
-
             try {
                 val id = tokenSlice.userId.first() ?: return@launch
-                services.getMessageService(id.toInt(), 1, pageSize, pageNumber)
+                val role = tokenSlice.role.first() ?: "Customer"
+                if (role== "Staff"){
+                    receptId = id.toInt()}
+
+                services.getMessageService(id.toInt(), receptId, pageSize, pageNumber)
                     .collect { response ->
                         senderMessagesList.addAll(response.messages)
                     }
-                services.getMessageService(1, id.toInt(), pageSize, pageNumber)
+                services.getMessageService(receptId, id.toInt(), pageSize, pageNumber)
                     .collect { response ->
                         recipientMessagesList.addAll(response.messages)
                     }
@@ -64,13 +92,17 @@ class ChatViewModel @Inject constructor(
         }
     }
 
-    fun sendMessage(recipientId: Int, messageText: String) {
+    fun sendMessage( messageText: String) {
         viewModelScope.launch {
             try {
                 val senderId = tokenSlice.userId.first() ?: return@launch
+                val role = tokenSlice.role.first() ?: "Customer"
+                if (role != "Staff"){
+                    receptId = 1}
+
                 val requestModel = SendMessageRequestModel(
                     userId = senderId.toInt(),
-                    recipientId = recipientId,
+                    recipientId = receptId,
                     message = messageText,
                     sentAt = OffsetDateTime.now(ZoneOffset.UTC)
                 )
@@ -79,9 +111,9 @@ class ChatViewModel @Inject constructor(
                 val newMessage = Message(
                     id = 0,
                     userId = senderId.toInt(),
-                    recipientId = recipientId,
+                    recipientId = receptId,
                     message = messageText,
-                    sentAt = System.currentTimeMillis().toInt()
+                    sentAt = OffsetDateTime.now(ZoneOffset.UTC)
                 )
                 currentMessages.add(newMessage)
                 _chatDataResponse.value = Result.Success(currentMessages)
@@ -92,8 +124,7 @@ class ChatViewModel @Inject constructor(
         }
     }
 
-
-    private fun observeNewMessages() {
+    public fun observeNewMessages() {
         viewModelScope.launch {
             signalRClient.newMessages.collectLatest { newMessage ->
                 currentMessages.add(newMessage)

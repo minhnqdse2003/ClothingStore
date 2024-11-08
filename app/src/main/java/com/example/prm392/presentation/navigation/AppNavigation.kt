@@ -12,6 +12,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Modifier
+import androidx.navigation.NavController
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -36,7 +37,12 @@ fun AppNavigation(
     val navController = rememberNavController()
     val destination = navigator.destination.collectAsState()
     val tokenExists = tokenSlice.token.collectAsState(initial = null).value != null
+    val role = tokenSlice.role.collectAsState(initial = null).value
+    val userId = tokenSlice.userId.collectAsState(initial = null).value
 
+    LaunchedEffect(Unit) {
+        tokenSlice.decodeTokenPayload("")
+    }
     val startDestination = if (tokenExists) {
         Screen.HomeScreen.route
     } else {
@@ -50,10 +56,10 @@ fun AppNavigation(
             }
         } else
             if (navController.currentDestination?.route != destination.value.route) {
-            navController.navigate(destination.value.route) {
-                launchSingleTop = true
+                navController.navigate(destination.value.route) {
+                    launchSingleTop = true
+                }
             }
-        }
     }
 
     NavHost(
@@ -87,7 +93,14 @@ fun AppNavigation(
             enterTransition = { slideInHorizontally(initialOffsetX = { it }) + fadeIn() },
             exitTransition = { slideOutHorizontally(targetOffsetX = { it }) + fadeOut() }
         ) { navBackStackEntry ->
-                NotificationScreen(navController = navController)
+            NotificationScreen(navController = navController)
+        }
+        composable(
+            route = Screen.ChatScreen.route,
+            enterTransition = { slideInHorizontally(initialOffsetX = { it }) + fadeIn() },
+            exitTransition = { slideOutHorizontally(targetOffsetX = { it }) + fadeOut() }
+        ) { navBackStackEntry ->
+            ChatScreen(navController = navController)
         }
 
         // Home screen with Bottom Navigation
@@ -106,19 +119,35 @@ fun AppNavigation(
         }
 
         // Chat screen with Bottom Navigation
-        composable(route = Screen.ChatScreen.route) {
-            Scaffold(
-                bottomBar = { BottomNavigationComponent(navController = navController) }
-            ) { paddingValues ->
-                AnimatedVisibility(
-                    visible = true,
-                    enter = fadeIn() + slideInHorizontally(initialOffsetX = { it }),
-                    exit = fadeOut() + slideOutHorizontally(targetOffsetX = { it })
-                ) {
-                    ChatScreen(modifier = Modifier.padding(paddingValues))
-                }
-            }
-        }
+//        composable(
+//            "${Screen.Chát.route}/{receiptId}",
+//            arguments = listOf(navArgument("receiptId") { type = NavType.StringType }),
+//        ) {navBackStackEntry ->
+//        Scaffold(
+//                bottomBar = { BottomNavigationComponent(navController = navController) }
+//            ) { paddingValues ->
+//                AnimatedVisibility(
+//                    visible = true,
+//                    enter = fadeIn() + slideInHorizontally(initialOffsetX = { it }),
+//                    exit = fadeOut() + slideOutHorizontally(targetOffsetX = { it })
+//                ) {
+//                    if (role == "Staff" && userId != null) {
+//                        navController.navigate(Screen.ChatListScreen.route)
+//                    } else {
+//                        navBackStackEntry.arguments?.getString("receiptId")?.let { receiptId ->
+//                            ChatScreen(
+//                                navController = navController,
+//                                modifier = Modifier.padding(paddingValues),
+//                                receptId = receiptId.toInt(),
+//
+//                            )
+//                        }
+//                    }
+//
+//                }
+//            }
+//
+//        }
         composable(route = Screen.ChatListScreen.route) {
             Scaffold(
                 bottomBar = { BottomNavigationComponent(navController = navController) }
@@ -128,7 +157,10 @@ fun AppNavigation(
                     enter = fadeIn() + slideInHorizontally(initialOffsetX = { it }),
                     exit = fadeOut() + slideOutHorizontally(targetOffsetX = { it })
                 ) {
-                    ChatListScreen(navController = navController, modifier = Modifier.padding(paddingValues))
+                    ChatListScreen(
+                        navController = navController,
+                        modifier = Modifier.padding(paddingValues)
+                    )
                 }
             }
         }

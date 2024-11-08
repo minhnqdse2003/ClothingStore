@@ -1,7 +1,5 @@
 package com.example.prm392.presentation.chat_screen
 
-import android.net.Uri
-import android.util.Log
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -21,14 +19,18 @@ import com.example.prm392.presentation.chat_list.components.ChatListItem
 @Composable
 fun ChatListScreen(
     navController: NavController,
-    viewModel: MainViewModel = hiltViewModel(),
+    viewModel: ChatViewModel = hiltViewModel(),
     modifier: Modifier = Modifier
 ) {
     val chats = listOf(
-        Chat("Shop Support", "How can we help you?", "10:30 AM"),
-        Chat("John Doe", "Got the information, thanks!", "Yesterday"),
-        Chat("Family Group", "Let's plan for the weekend!", "2 days ago"),
+        Chat(1,"Shop Support", "How can we help you?", "10:30 AM"),
+        Chat(2,"John Doe", "Got the information, thanks!", "Yesterday"),
+        Chat(3,"Family Group", "Let's plan for the weekend!", "2 days ago"),
     )
+    LaunchedEffect(true) {
+        viewModel.checkPageByRole(navController)
+        viewModel.fetchListMessage()
+    }
 
     Scaffold(
         topBar = {
@@ -54,7 +56,8 @@ fun ChatListScreen(
                     ChatListItem(
                         chat = chat,
                         onClick = {
-                            navController.navigate("message/${chat.title}")
+                            viewModel.onChooseUser(user = chat.id, navController = navController)
+//                            navController.navigate("message/${chat.id}")
                         }
                     )
                 }
@@ -63,4 +66,4 @@ fun ChatListScreen(
     )
 }
 
-data class Chat(val title: String, val lastMessage: String, val timestamp: String)
+data class Chat(val id: Int,val title: String, val lastMessage: String, val timestamp: String)

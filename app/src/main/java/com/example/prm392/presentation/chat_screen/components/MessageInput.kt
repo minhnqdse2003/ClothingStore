@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.Send
 import androidx.compose.material.icons.filled.Send
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -30,7 +31,7 @@ fun MessageInput(
         modifier = Modifier
             .fillMaxWidth()
             .padding(horizontal = 16.dp, vertical = 10.dp)
-            .padding(bottom = 80.dp)
+//            .padding(bottom = 80.dp)
             .imePadding()
             .shadow(elevation = 4.dp, shape = RoundedCornerShape(16.dp))
             .background(Color.White, shape = RoundedCornerShape(16.dp))
@@ -63,7 +64,7 @@ fun MessageInput(
         IconButton(onClick = onMessageSent) {
 
             Icon(
-                imageVector = Icons.Default.Send,
+                imageVector = Icons.AutoMirrored.Filled.Send,
                 contentDescription = "Send",
                 tint = tint
             )
