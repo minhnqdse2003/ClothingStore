@@ -5,12 +5,16 @@ import android.content.Context
 import com.example.prm392.data.ICartApi
 import com.example.prm392.data.ICategoryApi
 import com.example.prm392.data.IClothingProductApi
+import com.example.prm392.data.IMessageApi
+import com.example.prm392.data.INotifyAPI
 import com.example.prm392.data.IProductApi
 import com.example.prm392.data.IStoreLocationApi
 import com.example.prm392.data.IUserApi
 import com.example.prm392.data.repository.CartRepository
 import com.example.prm392.data.repository.CategoryRepository
 import com.example.prm392.data.repository.ClothingProductRepository
+import com.example.prm392.data.repository.MessageRepository
+import com.example.prm392.data.repository.NotifyRepository
 import com.example.prm392.data.repository.ProductRepository
 import com.example.prm392.data.repository.StoreLocationRepository
 import com.example.prm392.data.repository.UserRepository
@@ -21,11 +25,19 @@ import com.example.prm392.domain.service.Cart.RemoveUserCartService
 import com.example.prm392.domain.service.Cart.UpdateUserCartItemQuantityService
 import com.example.prm392.domain.service.Category.CategoryService
 import com.example.prm392.domain.service.Category.GetAllCategoryService
+import com.example.prm392.domain.repository.IMessageRepository
 import com.example.prm392.domain.service.ClothingProduct.ClothingProductService
 import com.example.prm392.domain.service.ClothingProduct.GetAllClothing
 import com.example.prm392.domain.service.ClothingProduct.GetProductById
 import com.example.prm392.domain.service.GetProductDataService
 import com.example.prm392.domain.service.GetSearchProductDataService
+import com.example.prm392.domain.service.MessageService.GetListChat
+import com.example.prm392.domain.service.MessageService.GetMessageById
+import com.example.prm392.domain.service.MessageService.MessageService
+import com.example.prm392.domain.service.MessageService.SendMessage
+import com.example.prm392.domain.service.NotifyService.GetNotify
+import com.example.prm392.domain.service.NotifyService.NotifyService
+import com.example.prm392.domain.service.NotifyService.UpdateStatus
 import com.example.prm392.domain.service.Services
 import com.example.prm392.domain.service.User.GetAuthUserService
 import com.example.prm392.domain.service.User.LoginService
@@ -98,6 +110,7 @@ object AppModule {
             .build()
     }
 
+
     @Provides
     @Singleton
     fun provideHeaderProcessing(tokenSlice: TokenSlice): HeaderProcessing {
@@ -128,10 +141,15 @@ object AppModule {
 
     @Provides
     @Singleton
-    fun provideServices(repository: ProductRepository): Services {
+    fun provideServices(repository: ProductRepository, messageRepository: MessageRepository, notifyRepository: NotifyRepository): Services {
         return Services(
             getProductDataService = GetProductDataService(repository),
-            getSearchProductDataService = GetSearchProductDataService(repository)
+            getSearchProductDataService = GetSearchProductDataService(repository),
+            updateStatus = UpdateStatus(notifyRepository),
+            getNotifyService = GetNotify(notifyRepository),
+            getMessageService = GetMessageById(messageRepository),
+            sendMessageService = SendMessage(messageRepository),
+            getListChat = GetListChat(messageRepository)
         )
     }
 
@@ -247,6 +265,47 @@ object AppModule {
     fun provideStoreLocationService(repository: StoreLocationRepository): StoreLocationService {
         return StoreLocationService(
             getAllStoreLocation = GetAllStoreLocationService(repository)
+        )
+    }
+    @Provides
+    @Singleton
+    fun provideMessageApi(retrofit: Retrofit): IMessageApi {
+        return retrofit.create(IMessageApi::class.java)
+    }
+
+    @Provides
+    @Singleton
+    fun provideMessageRepository(api: IMessageApi, headerProcessing: HeaderProcessing): MessageRepository {
+        return MessageRepository(api, headerProcessing)
+    }
+
+    @Provides
+    @Singleton
+    fun provideMessageService(repository: MessageRepository): MessageService {
+        return MessageService(
+            getMessageById = GetMessageById(repository),
+            sendMessage = SendMessage(repository),
+            getListChat = GetListChat(repository)
+        )
+    }
+    @Provides
+    @Singleton
+    fun providerNotifyApi(retrofit: Retrofit): INotifyAPI {
+        return retrofit.create(INotifyAPI::class.java)
+    }
+
+    @Provides
+    @Singleton
+    fun providerNotifyRepository(api: INotifyAPI, headerProcessing: HeaderProcessing): NotifyRepository {
+        return NotifyRepository(api, headerProcessing)
+    }
+
+    @Provides
+    @Singleton
+    fun providerNotifyService(repository: NotifyRepository): NotifyService {
+        return NotifyService(
+            getNotify = GetNotify(repository),
+            updateStatus = UpdateStatus(repository)
         )
     }
 }

@@ -9,9 +9,11 @@ import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.navigation.NavController
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -28,6 +30,8 @@ import com.example.prm392.presentation.cart_screen.CartScreen
 import com.example.prm392.presentation.map_screen.MapScreen
 import com.example.prm392.presentation.payment_screen.PaymentScreen
 import com.example.prm392.presentation.product_screen.ProductDetailsScreen
+import com.example.prm392.presentation.chat_screen.ChatListScreen
+import com.example.prm392.presentation.notification_screen.NotificationScreen
 import com.example.prm392.presentation.profile_screen.ProfileScreen
 import com.example.prm392.utils.TokenSlice
 
@@ -37,7 +41,12 @@ fun AppNavigation(
 ) {
     val navController = rememberNavController()
     val tokenExists = tokenSlice.token.collectAsState(initial = null).value != null
+    val role = tokenSlice.role.collectAsState(initial = null).value
+    val userId = tokenSlice.userId.collectAsState(initial = null).value
 
+    LaunchedEffect (Unit) {
+        tokenSlice.decodeTokenPayload("")
+    }
     val startDestination = if (tokenExists) {
         Screen.HomeScreen.route
     } else {
@@ -77,6 +86,20 @@ fun AppNavigation(
                 DetailScreen(title)
             }
         }
+        composable(
+            route = Screen.NotificationScreen.route,
+            enterTransition = { slideInHorizontally(initialOffsetX = { it }) + fadeIn() },
+            exitTransition = { slideOutHorizontally(targetOffsetX = { it }) + fadeOut() }
+        ) { navBackStackEntry ->
+            NotificationScreen(navController = navController)
+        }
+        composable(
+            route = Screen.ChatScreen.route,
+            enterTransition = { slideInHorizontally(initialOffsetX = { it }) + fadeIn() },
+            exitTransition = { slideOutHorizontally(targetOffsetX = { it }) + fadeOut() }
+        ) { navBackStackEntry ->
+            ChatScreen(navController = navController)
+        }
 
         composable(
             route = "${Screen.ProductDetailScreen.route}/{id}",
@@ -105,8 +128,7 @@ fun AppNavigation(
             }
         }
 
-        // Chat screen with Bottom Navigation
-        composable(route = Screen.ChatScreen.route) {
+        composable(route = Screen.ChatListScreen.route) {
             Scaffold(
                 bottomBar = { BottomNavigationComponent(navController = navController) },
                 containerColor = Color.White
@@ -116,7 +138,10 @@ fun AppNavigation(
                     enter = fadeIn() + slideInHorizontally(initialOffsetX = { it }),
                     exit = fadeOut() + slideOutHorizontally(targetOffsetX = { it })
                 ) {
-                    ChatScreen(modifier = Modifier.padding(paddingValues))
+                    ChatListScreen(
+                        navController = navController,
+                        modifier = Modifier.padding(paddingValues)
+                    )
                 }
             }
         }

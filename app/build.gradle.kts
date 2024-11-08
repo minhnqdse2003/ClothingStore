@@ -66,6 +66,7 @@ dependencies {
     implementation(libs.androidx.ui.tooling.preview)
     implementation(libs.androidx.material3)
     implementation(libs.play.services.location)
+    implementation(libs.androidx.tools.core)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
@@ -86,12 +87,11 @@ dependencies {
     implementation("androidx.navigation:navigation-compose:2.8.3")
     //Hilt
     implementation("com.google.dagger:hilt-android:2.52")
-    kapt ("com.google.dagger:hilt-compiler:2.52")
+    kapt("com.google.dagger:hilt-compiler:2.52")
     //Coil
     implementation("io.coil-kt.coil3:coil-compose:3.0.0-rc01")
     implementation("io.coil-kt.coil3:coil-network-okhttp:3.0.0-rc01")
 
-    implementation("com.squareup.okhttp3:logging-interceptor:4.12.0")
     implementation("androidx.hilt:hilt-navigation-compose:1.2.0")
     implementation("com.google.accompanist:accompanist-permissions:0.36.0")
 
@@ -104,4 +104,6 @@ dependencies {
     implementation("com.google.android.libraries.mapsplatform.secrets-gradle-plugin:secrets-gradle-plugin:2.0.1")
     implementation("com.google.maps.android:maps-compose:6.1.0")
     implementation("com.google.maps.android:android-maps-utils:3.9.0")
+    //signalr
+    implementation ("com.microsoft.signalr:signalr:5.0.11")
 }
