@@ -9,6 +9,7 @@ import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -43,7 +44,7 @@ fun AppNavigation(
     val role = tokenSlice.role.collectAsState(initial = null).value
     val userId = tokenSlice.userId.collectAsState(initial = null).value
 
-    LaunchedEffect(Unit) {
+    LaunchedEffect (Unit) {
         tokenSlice.decodeTokenPayload("")
     }
     val startDestination = if (tokenExists) {
