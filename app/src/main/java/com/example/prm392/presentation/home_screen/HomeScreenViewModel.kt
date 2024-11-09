@@ -140,6 +140,8 @@ class HomeScreenViewModel @Inject constructor(
     fun onCategorySelected(category: Category) {
         selectedCategory.value = if (selectedCategoryId.value != category.categoryID) category else null
         selectedCategoryId.value = if (selectedCategoryId.value != category.categoryID) category.categoryID else null
+        _clothingProducts.value = Result.Success(data = emptyList())
+        currentPage.intValue = 1
         loadMoreClothing(onFilter = true)
     }
 

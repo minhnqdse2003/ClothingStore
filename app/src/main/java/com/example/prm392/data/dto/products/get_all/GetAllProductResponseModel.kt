@@ -13,7 +13,7 @@ data class GetAllProductResponseModel(
     val totalCount: Int,
     @Json(name = "pageNumber")
     val currentPage: Int,
-    @Json(name = "totalPages")
+    @Json(name = "pageCount")
     val totalPages: Int
 )
 
