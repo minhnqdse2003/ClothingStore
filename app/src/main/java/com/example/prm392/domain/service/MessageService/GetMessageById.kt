@@ -1,9 +1,7 @@
 package com.example.prm392.domain.service.MessageService
 
 import android.util.Log
-import com.example.prm392.data.dto.Message.GetMessagesResponseModel
-import com.example.prm392.data.dto.Message.toGetMessageResDto
-import com.example.prm392.domain.model.Message.Response.GetMessageResponseDto
+import com.example.prm392.data.dto.Message.Message
 import com.example.prm392.domain.repository.IMessageRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
@@ -17,8 +15,9 @@ class GetMessageById @Inject constructor(
         recipientId: Int,
         pageSize: Int,
         pageNumber: Int
-    ): Flow<GetMessagesResponseModel> = flow {
+    ): Flow<List<Message>> = flow {
         try {
+            Log.d("FetchMessages", "Function fetchMessages started with pageSize: $pageSize, pageNumber: $pageNumber | $userId, $recipientId")
             val response = repository.getMessageById(userId, recipientId, pageSize, pageNumber)
             Log.d("ChatMessages", "Mapped Messages: $response")
             emit(response)

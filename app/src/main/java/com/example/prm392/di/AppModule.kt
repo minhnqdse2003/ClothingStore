@@ -288,6 +288,7 @@ object AppModule {
             getListChat = GetListChat(repository)
         )
     }
+
     @Provides
     @Singleton
     fun providerNotifyApi(retrofit: Retrofit): INotifyAPI {

@@ -11,11 +11,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
-import com.example.prm392.presentation.chat_screen.Chat
+import com.example.prm392.data.dto.Message.GetListChatModel
 
 @Composable
 fun ChatListItem(
-    chat: Chat,
+    chat: GetListChatModel,
     onClick: () -> Unit
 ) {
     Row(
@@ -39,7 +39,7 @@ fun ChatListItem(
 
         Column(modifier = Modifier.weight(1f)) {
             Text(
-                text = chat.title,
+                text = chat.username,
                 style = MaterialTheme.typography.titleMedium
             )
 //            Spacer(modifier = Modifier.height(4.dp))
@@ -53,10 +53,10 @@ fun ChatListItem(
 
         Spacer(modifier = Modifier.width(8.dp))
 
-        Text(
-            text = chat.timestamp,
-            style = MaterialTheme.typography.bodySmall,
-            color = Color.Gray
-        )
+//        Text(
+//            text = chat.timestamp,
+//            style = MaterialTheme.typography.bodySmall,
+//            color = Color.Gray
+//        )
     }
 }

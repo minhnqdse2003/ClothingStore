@@ -41,9 +41,9 @@ fun MessageList(messages: List<Message>, viewModel: ChatViewModel) {
     LaunchedEffect(listState) {
         snapshotFlow { listState.firstVisibleItemIndex }
             .collect { firstVisibleItemIndex ->
-                showScrollToBottom = firstVisibleItemIndex < (messages.size - 20)
-                if (firstVisibleItemIndex == 0) {
-                    val nextPage = (messages.size / 20) + 1
+                showScrollToBottom = firstVisibleItemIndex < (messages.size - 10)
+                if (firstVisibleItemIndex == 1 && !viewModel.isLoading.value) {
+                    val nextPage = (messages.size / 20) + 2
                     viewModel.fetchMessages(pageSize = 20, pageNumber = nextPage)
                 }
             }

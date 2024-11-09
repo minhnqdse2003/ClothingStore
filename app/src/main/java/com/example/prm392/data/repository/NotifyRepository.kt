@@ -29,4 +29,13 @@ class NotifyRepository @Inject constructor(
             api.updateStatus(header, notificationId)
         }
     }
+
+    override suspend fun createNoti(userId: Int, message: String) {
+        return withContext(Dispatchers.Default) {
+            val header = headerProcessing.createDynamicHeaders(
+                isTokenIncluded = true
+            )
+            api.createNoti(header,userId, message)
+        }    }
+
 }

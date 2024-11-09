@@ -41,6 +41,7 @@ import com.example.prm392.presentation.detail_screen.components.LoadingScreen
 import com.example.prm392.presentation.home_screen.components.CategoryCarousel
 import com.example.prm392.presentation.home_screen.components.HorizontalCarousel
 import com.example.prm392.presentation.home_screen.components.ProductItem
+import com.example.prm392.presentation.navigation.Screen
 import com.example.prm392.ui.theme.Vegur
 import com.example.prm392.utils.MySpacer
 import com.example.prm392.utils.Result
@@ -185,12 +186,18 @@ fun HomeScreen(
                     )
                 )
 
-                Icon(
-                    modifier = Modifier
-                        .size(24.dp),
-                    imageVector = Icons.Filled.Notifications,
-                    contentDescription = null
-                )
+                IconButton(
+                    onClick = {
+                        navController.navigate(Screen.NotificationScreen.route)
+                    }
+                ) {
+                    Icon(
+                        modifier = Modifier.size(24.dp),
+                        imageVector = Icons.Filled.Notifications,
+                        contentDescription = null
+                    )
+                }
+
             }
 
             MySpacer(16.dp)

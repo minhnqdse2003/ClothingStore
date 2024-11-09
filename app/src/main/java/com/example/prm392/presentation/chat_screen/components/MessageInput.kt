@@ -62,7 +62,6 @@ fun MessageInput(
         )
         Spacer(modifier = Modifier.width(10.dp))
         IconButton(onClick = onMessageSent) {
-
             Icon(
                 imageVector = Icons.AutoMirrored.Filled.Send,
                 contentDescription = "Send",

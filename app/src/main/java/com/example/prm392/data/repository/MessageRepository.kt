@@ -1,8 +1,10 @@
 package com.example.prm392.data.repository
 
+import android.util.Log
 import com.example.prm392.data.IMessageApi
 import com.example.prm392.data.dto.Message.GetListChatModel
 import com.example.prm392.data.dto.Message.GetMessagesResponseModel
+import com.example.prm392.data.dto.Message.Message
 import com.example.prm392.data.dto.Message.SendMessageResponseModel
 import com.example.prm392.domain.model.Message.Request.SendMessageRequestModel
 import com.example.prm392.domain.repository.IMessageRepository
@@ -21,12 +23,13 @@ class MessageRepository @Inject constructor(
         recipientId: Int,
         pageSize: Int,
         pageNumber: Int
-    ): GetMessagesResponseModel {
+    ): List<Message> {
         return withContext(Dispatchers.Default) {
+            Log.d("MessageRepository", "getMessageById called with recipientId: $recipientId")
             val header = headerProcessing.createDynamicHeaders(
                 isTokenIncluded = true
             )
-            api.getMessageData(header, recipientId, pageSize, pageNumber)
+            api.getMessageData(header,userId, recipientId, pageSize, pageNumber)
         }
     }
     override suspend fun getListChat(
@@ -40,7 +43,7 @@ class MessageRepository @Inject constructor(
         }
     }
 
-    override suspend fun sendMesssage(requestModel: SendMessageRequestModel
+    override suspend fun sendMessage(requestModel: SendMessageRequestModel
     ) {
         return withContext(Dispatchers.Default) {
             val header = headerProcessing.createDynamicHeaders(

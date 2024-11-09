@@ -5,8 +5,6 @@ import java.time.OffsetDateTime
 
 @JsonClass(generateAdapter = true)
 data class Message (
-    @Json(name = "id")
-    val id: Int,
     @Json(name = "userId")
     val userId: Int,
     @Json(name = "recipientId")
@@ -14,5 +12,5 @@ data class Message (
     @Json(name = "message")
     val message: String,
     @Json(name = "sentAt")
-    val sentAt: OffsetDateTime
+    val sentAt: String
 )

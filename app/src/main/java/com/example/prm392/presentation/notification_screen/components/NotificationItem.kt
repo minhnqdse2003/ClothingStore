@@ -1,6 +1,7 @@
 package com.example.prm392.presentation.notification_screen.components
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -18,12 +19,16 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.prm392.data.dto.Notify.Notification
+import com.example.prm392.presentation.notification_screen.NotifyViewModel
 
 
 @Composable
-fun NotificationItem(notification: Notification) {
-    val backgroundColor = if (notification.isRead) {
+fun NotificationItem(notification: Notification, viewModel: NotifyViewModel = hiltViewModel()
+) {
+    val backgroundColor = if (!notification.isRead) {
         MaterialTheme.colorScheme.surfaceVariant
     } else {
         MaterialTheme.colorScheme.surface
@@ -36,6 +41,9 @@ fun NotificationItem(notification: Notification) {
                 color = backgroundColor,
                 shape = RoundedCornerShape(20.dp)
             )
+            .clickable {
+                viewModel.markAsRead(notification.id)
+            }
             .padding(20.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {

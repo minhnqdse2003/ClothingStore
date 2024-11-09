@@ -34,6 +34,7 @@ import com.example.prm392.presentation.chat_screen.ChatListScreen
 import com.example.prm392.presentation.notification_screen.NotificationScreen
 import com.example.prm392.presentation.profile_screen.ProfileScreen
 import com.example.prm392.utils.TokenSlice
+import kotlinx.coroutines.flow.first
 
 @Composable
 fun AppNavigation(
@@ -45,7 +46,7 @@ fun AppNavigation(
     val userId = tokenSlice.userId.collectAsState(initial = null).value
 
     LaunchedEffect (Unit) {
-        tokenSlice.decodeTokenPayload("")
+        tokenSlice.decodeTokenPayload(tokenSlice.token.first() ?: return@LaunchedEffect)
     }
     val startDestination = if (tokenExists) {
         Screen.HomeScreen.route

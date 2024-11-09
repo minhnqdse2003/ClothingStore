@@ -70,17 +70,17 @@ class TokenSlice @Inject constructor(
     public fun decodeTokenPayload(token: String): Pair<String?, String?> {
         val tokenEx= "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxIiwiZW1haWwiOiJ1c2VyQGV4YW1wbGUuY29tIiwiaHR0cDovL3NjaGVtYXMubWljcm9zb2Z0LmNvbS93cy8yMDA4LzA2L2lkZW50aXR5L2NsYWltcy9yb2xlIjoiQ3VzdG9tZXIiLCJleHAiOjE3MzM2MzQ5MjN9.SUoxSquALNIdrw_ehSsXq-GNuiNP85nHzhE7h8MGBFo"
         return try {
-            val parts = tokenEx.split(".")
+            val parts = token.split(".")
             Log.d("Parts","${parts}" )
             if (parts.size == 3) {
                 val payload = String(Base64.decode(parts[1], Base64.URL_SAFE))
                 val jsonObject = JSONObject(payload)
                 val userId = jsonObject.getString("sub")
                 val role = jsonObject.getString("http://schemas.microsoft.com/ws/2008/06/identity/claims/role")
-//                Log.d("Parts","${jsonObject}" )
-//                Log.d("Parts", userId)
-//                Log.d("Parts", "tẽ")
-//                Log.d("Parts", role)
+                Log.d("Parts","${jsonObject}" )
+                Log.d("Parts", userId)
+                Log.d("Parts", "tẽ")
+                Log.d("Parts", role)
                 Pair(userId,role)
             } else {
                 Pair(null, null)
