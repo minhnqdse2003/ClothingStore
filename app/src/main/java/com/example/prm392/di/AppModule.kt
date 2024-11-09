@@ -35,6 +35,7 @@ import com.example.prm392.domain.service.MessageService.GetListChat
 import com.example.prm392.domain.service.MessageService.GetMessageById
 import com.example.prm392.domain.service.MessageService.MessageService
 import com.example.prm392.domain.service.MessageService.SendMessage
+import com.example.prm392.domain.service.NotifyService.CreateNotify
 import com.example.prm392.domain.service.NotifyService.GetNotify
 import com.example.prm392.domain.service.NotifyService.NotifyService
 import com.example.prm392.domain.service.NotifyService.UpdateStatus
@@ -306,7 +307,8 @@ object AppModule {
     fun providerNotifyService(repository: NotifyRepository): NotifyService {
         return NotifyService(
             getNotify = GetNotify(repository),
-            updateStatus = UpdateStatus(repository)
+            updateStatus = UpdateStatus(repository),
+            createNotify = CreateNotify(repository)
         )
     }
 }
